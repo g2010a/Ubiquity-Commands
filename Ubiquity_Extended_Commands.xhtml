@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Ubiquity Extended Commands</title>
+  <link rel="commands" href="Ubiquity_Extended_Commands.xhtml"/>
+</head>
+<style>
+  div[id] {display: none}
+  script {display: block; white-space: pre; font-family: monospace; color:gray;}
+  ol item { display: block; white-space:pre; margin-top: 0.5em; margin-left:1em;}
+</style>
+<body>
+<p>This XHTML feed contains extended commands for Mozilla's Ubiquity.</p>
+<p>Get Ubiquity here: <a href="https://bitbucket.org/satyr/ubiquity/downloads/tip.xpi">https://bitbucket.org/satyr/ubiquity/downloads/tip.xpi</a></p>
+<ol>
+	<item>diaspora: Share the current page on Diaspora</item>
+	<item>paste_passwords: Attempt to allow pasting into password fields in pages that have programmatically disallowed it</item>
+    <item>plus: Share the current page on Google Plus</item>
+    <item>textarea2editor: Triple-click a plain textarea to turn it into a Code Editor using the ACE Bookmarklet</item>
+    <item>wishlist: Execute the Amazon Universal Wishlist bookmarklet</item>
+    <item>Amazon.de: Searches Amazon.de for items matching your words.</item>
+    <item>bigpicture: Previews Boston.com's The Big Picture (from RSS Feed)</item>
+    <item>chart: Turn numeric data into charts using the Google Charts API</item>
+    <item>color: Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.</item>
+    <item>decode: Decodes URL-encoded text</item>
+    <item>dict: Searches Dict.cc for a German/English term and loads results in the preview pane.</item>
+    <item>dictes: Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.</item>
+    <item>encode: URL-encodes text</item>
+    <item>fortune: Retrieves a Unix Fortune from the online service ihearquotes.com</item>
+    <item>get-color: Grab colors from web pages</item>
+    <item>lds: Searches LDS.org and loads results into the Preview pane.</item>
+    <item>qrcode: Generates a QR Code with the specified text encoded.</item>
+    <item>stock-chart: Displays a stock chart for the given ticker (from Yahoo! finance).</item>
+    <item>text2html: Renders plain text as HTML.</item>
+    <item>wolf: Searches WolframAlpha and loads results in to Preview pane.</item>    
+</ol>
+<!-- ============================================ -->
+<!--	Template for Amazon Search                -->
+<!-- ============================================ -->
+<div id="amazon-search">
+<style>
+  ol, ul {list-style: none; margin: 0; padding: 0}
+  img {float: right; margin: 0 0 0.5em 0.5em}
+  kbd {vertical-align: middle; text-transform: uppercase}
+  kbd:after {content: ":"}
+  kbd, .price {font-weight: bolder}
+  .item {margin-top: 0.4em; clear: right}
+  .feature {margin-top: 0.2em}
+  .price, .author, .label, .feature {font-size: 88%}
+  .author:before {content: "by "}
+  .feature:before {content: "\2022  "}
+</style>
+${matchMessage}
+<ol>
+{for item in items}
+  <li class="item">
+    {if item.image}
+      <a href="${item.url}"><img src="${item.image.src}" border="0"
+        height="${item.image.height}" width="${item.image.width}"/></a>
+    {/if}
+    <kbd>${item.key}</kbd>
+    <a href="${item.url}" accesskey="${item.key}">${item.title}</a>
+    {if item.price}
+      <nobr class="price">
+        ${item.price.amount} (${item.price.currency})
+      </nobr>
+    {/if}
+    {if item.author}
+      <div class="author">${item.author}</div>
+    {/if}
+    {if item.label}
+      <div class="label">${item.label}</div>
+    {/if}
+    <ul>
+    {for feature in item.features}
+      <li class="feature">${feature}</li>
+    {/for}
+    </ul>
+  </li>
+{/for}
+</ol>
+</div>
+
+<!-- ============================================ -->
+<!--	Template for Big Picture				  -->
+<!-- ============================================ -->
+<div id="big-picture">
+<style>
+div.container { 
+	font-size: 12px; 
+	margin: 5px 0 35px 0;
+	max-width: 470px;
+}
+.header { 
+	background-color: #444;
+	padding: 10px;
+	border-radius: 10px 10px 0 0;
+}
+span.image {
+	display:block;
+	margin-top: 5px; 
+	background-color: #444;
+	border-radius: 0px 10px 10px 10px;
+	padding: 10px;
+}
+img { border-radius: 10px; }
+</style>
+{for item in items}
+    <div class='container'>
+		<a href='${item.permalink}'>
+			<span class='header'><span class='date'>${item.pubDate}</span> | ${item.title}</span>
+			<br/><span class='image'>${item.image}</span>
+		</a>
+    </div>
+{/for}
+</div>
+
+<script type="?" class="commands">
+<![CDATA[
+/**
+ * Bookmarklets
+ * Execute a variety of bookmarklets
+ */
+CmdUtils.makeBookmarkletCommand({
+	names: ["diaspora", "Share on Diaspora"],
+	icon: "http://joindiaspora.com/favico.ico",
+	description: "Share the current page on Diaspora",
+	url: "javascript:(function(){f='https://diasp.org/bookmarklet?url='+encodeURIComponent(window.location.href)+'&title='+encodeURIComponent(document.title)+'&notes='+encodeURIComponent(''+(window.getSelection?window.getSelection():document.getSelection?document.getSelection():document.selection.createRange().text))+'&v=1&';a=function(){if(!window.open(f+'noui=1&jump=doclose','diasporav1','location=yes,links=no,scrollbars=no,toolbar=no,width=620,height=250'))location.href=f+'jump=yes'};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})()"
+})
+
+CmdUtils.makeBookmarkletCommand({
+	names: ["paste_passwords", "Allow Password Pasting"],
+	description: "Attempt to allow pasting into password fields in pages that have programmatically disallowed it",
+	url: "javascript:(function(){var%20inputs=document.getElementsByTagName('input');for(var%20i=0;i<inputs.length;i++){if(inputs[i].getAttribute('type').toLowerCase()==='password'){inputs[i].setAttribute('onpaste','');}}})();"
+})
+
+CmdUtils.makeBookmarkletCommand({	
+	names: ["plus", "Share on Google+"],
+	icon: "https://www.gstatic.com/images/icons/gplus-64.png",
+	description: "Share the current page on Google Plus",
+	url: "javascript:void(window.open('https://plus.google.com/share?ur\l='+encodeURIComponent(location),%20'Share%20to%20Google+','width=600,height=460,menubar=no,location=no,status=no'))"
+})
+
+CmdUtils.makeBookmarkletCommand({
+	names: ["textarea2editor"],
+    icon: "http://ajaxorg.github.com/ace/doc/site/images/ace-tab.png",
+	description: "Triple-click a plain textarea to turn it into a Code Editor using the ACE Bookmarklet",
+    url: 'javascript:(function%20inject(callback)%20{%20var%20baseUrl="http://ajaxorg.github.com/ace-builds/textarea/src/";%20var%20load%20=%20window.__ace_loader__%20=%20function(path,%20module,%20callback)%20{%20var%20head%20=%20document.getElementsByTagName("head")[0];%20var%20s%20=%20document.createElement("script");%20s.src%20=%20baseUrl%20+%20path;%20head.appendChild(s);%20s.onload%20=%20function%20()%20{%20window.__ace_shadowed__.require([module],%20callback);%20};%20};%20load("ace-bookmarklet.js",%20"ace/ext/textarea",%20function%20()%20{%20var%20ace%20=%20window.__ace_shadowed__;%20ace.options%20=%20{%20mode:"javascript",theme:"merbivore",gutter:"true",fontSize:"12px",softWrap:"off",keybindings:"ace",showPrintMargin:"false",useSoftTabs:"true",showInvisibles:"false"%20};%20var%20Event%20=%20ace.require("ace/lib/event");%20var%20areas%20=%20document.getElementsByTagName("textarea");%20for%20(var%20i%20=%200;%20i%20<%20areas.length;%20i++)%20{%20Event.addListener(areas[i],%20"click",%20function%20(e)%20{%20if%20(e.detail%20==%203)%20{%20ace.transformTextarea(e.target,%20load);%20}%20});%20}%20callback%20&&%20callback();%20});})()'
+})
+
+CmdUtils.makeBookmarkletCommand({
+	names: ["wishlist", "Amazon universal wishlist"],
+	description: "Execute the Amazon Universal Wishlist bookmarklet",
+	url: "javascript:(function(){var%20w=window,l=w.location,d=w.document,s=d.createElement('script'),e=encodeURIComponent,x='undefined',u='http://www.amazon.com/wishlist/add';if(typeof%20s!='object')l.href=u+'?u='+e(l)+'&t='+e(d.title);function%20g(){if(d.readyState&&d.readyState!='complete'){setTimeout(g,200);}else{if(typeof%20AUWLBook==x)s.setAttribute('src',u+'.js?loc='+e(l)),d.body.appendChild(s);function%20f(){(typeof%20AUWLBook==x)?setTimeout(f,200):AUWLBook.showPopover();}f();}}g();}())"
+})
+
+/** ************************************************************************************************
+ * Amazon.de
+ * Search amazon.de
+ * *********************************************************************************************** */
+// Clone of amazon.com for amazon.de
+var AmazonDE = "http://www.amazon.de/";
+var AmazDeLink = "Amazon.de".link(AmazonDE);
+var noun_type_amazon_de_index = CmdUtils.NounType("index", {
+  All: 0,
+  Apparel: 15683091,
+  Automotive: 15690151,
+  Baby: 3760931,
+  Beauty: 11055981,
+  Books: 1000,
+  Classical: 301668,
+  DigitalMusic: 301668,
+  DVD: 130,
+  Electronics: 493964,
+  GourmetFood: 3580501,
+  Grocery: 10746371,
+  HealthPersonalCare: 3760931,
+  HomeGarden: 1063498,
+  Industrial: 228013,
+  Jewelry: 3880591,
+  Kitchen: 1063498,
+  Magazines: 44264011,
+  Merchants: 493964,
+  Miscellaneous: 349028011,
+  Music: 301668,
+  MusicalInstruments: 12923151,
+  OfficeProducts: 1084128,
+  OutdoorLiving: 1063498,
+  PCHardware: 493964,
+  PetSupplies: 13900811,
+  Photo: 13900861,
+  Shoes: 3375301,
+  Software: 409488,
+  SportingGoods: 1036682,
+  Tools: 228013,
+  Toys: 130,
+  VHS: 404272,
+  Video: 130,
+  VideoGames: 44263011,
+  Watches: 378516011,
+  Wireless: 408234,
+  WirelessAccessories: 408234,
+}, "All");
+var AWS_ENDPOINT = "ecs.amazonaws.de";
+var AWS_REQUESTURI = "/onca/xml";
+// This key is linked to Blair McBride's AWS account - and only free services are enabled.
+// Please don't re-use it or abuse it. Instead, get your own AWS key - its free.
+var AWS_KEY = "08WX39XKK81ZEWHZ52R2";
+var AWS_SECRET = "w0WOQNS+GZcJWjrAmlK885tFi6rcrr9WOgeu6eK3";
+
+function amazon_doEscape(aString) (
+  encodeURIComponent(aString)
+  .replace(/[!\'()*]+/g, function escape0(s) escape(s, 0)));
+function amazon_signRequest(aParams) {
+  var key;
+  var params = {};
+  for (key in aParams)
+    params[key] = aParams[key];
+  params.Timestamp = new Date().toISOString().slice(0, -5) + "Z";
+  params.AWSAccessKeyId = AWS_KEY;
+  var paramArray = [];
+  for (key in params)
+    paramArray.push(amazon_doEscape(key) + "=" + amazon_doEscape(params[key]));
+  paramArray.sort();
+  var paramString = paramArray.join("&");
+  var sigBaseString =
+    "GET\n" + AWS_ENDPOINT + "\n" + AWS_REQUESTURI + "\n" + paramString;
+  var signature = Utils.signHmac("SHA256", AWS_SECRET, sigBaseString);
+  return ("http://" + AWS_ENDPOINT + AWS_REQUESTURI + "?" +
+          paramString + "&Signature=" + amazon_doEscape(signature));
+}
+
+CmdUtils.CreateCommand({
+  names: ["Amazon.de"],
+  icon: "chrome://ubiquity/skin/icons/amazon.ico",
+  author: {name:"Modified for .de by g2010a"},
+  description: "Searches " + AmazDeLink + " for items matching your words.",
+  help: '<dl><dt>Available Indices</dt><dd><b>'+
+    noun_type_amazon_de_index._list.reduce(function (dd, s) {
+      return dd + s.text + ' '
+    }, '')
+  +'</b></dd></dl>',
+  arguments: [
+    {role: "object", nountype: noun_arb_text, label: "search term"},
+    {role: "format", nountype: noun_type_amazon_de_index}],
+  execute: function amazon_execute({object: {text}, format: {data}}) {
+    Utils.openUrlInBrowser(
+      AmazonDE + "s/ref=nb_ss_gw" +
+      Utils.paramsToString({url: "node=" + data, "field-keywords": text}));
+  },
+  preview: function(previewBlock,
+                    {object: {text, summary}, format: {text: searchIndex}}) {
+    if (!text) return void this.previewDefault(previewBlock);
+
+    var me = this;
+    previewBlock.innerHTML =
+      _("Searching ${AmazDeLink} for items matching <b>${query}</b>.",
+        {AmazDeLink: AmazDeLink, query: summary});
+    CmdUtils.previewAjax(previewBlock, {
+      url: amazon_signRequest({
+        Service: "AWSECommerceService",
+        Version: "2008-08-19",
+        Operation: "ItemSearch",
+        Condition: "All",
+        Merchant: "All",
+        ResponseGroup: "ItemAttributes,Images",
+        AssociateTag: "matyr-22", // required
+        SearchIndex: searchIndex,
+        Keywords: text,
+      }),
+      dataType: "xml",
+      error: function amazon_error(xhr, info) {
+        previewBlock.innerHTML = (
+          "<p class='error'>" +
+          _("Error searching ${AmazDeLink}.", {AmazDeLink: AmazDeLink}) +
+          "<br/><em>" + xhr.status + " " + xhr.statusText +
+          " (" + info + ")</em></p>");
+        // TODO: think of a better way to localize API errors, if possible.
+      },
+      success: function amazon_success(responseData) {
+        responseData = jQuery(responseData);
+        var errorMessage = responseData.find("Error > Message").text();
+        if (errorMessage) {
+          previewBlock.innerHTML =
+            "<p class='error'>" + _(errorMessage) + "</p>";
+          return;
+        }
+        const MAX_RESULTS = 35; // 1 ~ 9, a ~ z
+        function iter(itemIndex) {
+          var itemDetails = jQuery(this),
+          itemAttrs = itemDetails.find("ItemAttributes"),
+          listPrice = itemAttrs.find("ListPrice"),
+          smallImage = itemDetails.find("SmallImage:first");
+          return {
+            title: itemAttrs.find("Title").text(),
+            url: itemDetails.find("DetailPageURL").text(),
+            key: (itemIndex + 1).toString(MAX_RESULTS + 1),
+            author: (itemAttrs.find("Author")
+                     .map(function() this.textContent).get().join(', ')),
+            features: (itemAttrs.find("Feature")
+                       .map(function() this.textContent).get()),
+            label: itemAttrs.find("Label").text(),
+            price: listPrice.length && {
+              amount: listPrice.find("FormattedPrice").text(),
+              currency: listPrice.find("CurrencyCode").text(),
+            },
+            image: smallImage.length && {
+              src: smallImage.find("URL").text(),
+              height: smallImage.find("Height").text(),
+              width: smallImage.find("Width").text(),
+            }
+          };
+        }
+        previewBlock.innerHTML = CmdUtils.renderTemplate(
+          feed.dom.getElementById("amazon-search").innerHTML,
+          { items: (responseData.find("Items > Item").slice(0, MAX_RESULTS)
+                    .map(iter).get()),
+            matchMessage: _(
+              ("Found <b>${numitems}</b> item{if numitems > 1}s{/if} on " +
+               "<a href='http://www.amazon.de/'>Amazon.de</a> " +
+               "matching <b>${query}</b>."),
+              { numitems: responseData.find("Items > TotalResults").text(),
+                query: text }) });
+      }
+    });
+  }
+});
+
+/** ************************************************************************************************
+ * Big Picture
+ * Previews Boston.com's The Big Picture
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+    names: ['bigpicture'],
+    icon: 'http://www.boston.com/favicon.ico',
+    homepage: '',
+    author: {name:'g2010a'},
+    description: 'Previews Boston.com\'s The Big Picture (from RSS Feed)',
+    preview: function(pblock, input){
+        var xmlurl = 'http://feeds.boston.com/boston/bigpicture/index'
+        CmdUtils.previewGet(pblock, xmlurl, null, 
+            function(data) {
+                // data is an xml document
+                var items = []
+                jQuery(data).find('item').map(function(i,d) {
+                    var desc = jQuery("<div>").html( jQuery(d).find('description').text() ),
+                        imgobj = jQuery( jQuery('.bpImage', desc)[0] )
+                        imgobjw = imgobj.width()
+                        imgobjh = imgobj.height()
+                    items.push({
+                        title: jQuery(d).find('title').text(),
+                        link: jQuery(d).find('link').text(),
+                        description: desc.html(),
+                        pubDate: new Date(jQuery(d).find('pubDate').text()).toString('yyyy-MM-dd'),
+                        permalink: jQuery(d).find('guid').text(),
+                        image: imgobj.width(450).height( imgobjh * 450 / imgobjw )[0].outerHTML
+                    })
+                })
+                
+                var html = ""
+                pblock.innerHTML = CmdUtils.renderTemplate(
+                    feed.dom.getElementById("big-picture").innerHTML,
+                    { items: items }
+                )
+            }
+        )
+    }
+})
+
+/** ************************************************************************************************
+ * Graphs pie, bar, and line charts.
+ * Updated to the new parser by Ammad http://github.com/ammad
+ * Extended to use different decimal separators by g2010a
+ * *********************************************************************************************** */
+var decsep = ".";
+var colors = "&chco=94B6D2,D6AA20,759E00,D8773A,007777,B53A3A,713871,4A6E21,979000",
+    //"&chco=7979B2,C6C6FF,E0E0FF,B2A567,FFF5C6";
+    noun_type_chart = new CmdUtils.NounType( "chart",
+      ["pie", "bar", "line", "tline"], "pie"
+    ),
+    noun_type_width_height = new CmdUtils.NounType( "width[xheight]",
+      /^\d+(x\d+)?$/, "400x200"
+    ),
+	noun_type_decimal_separator = new CmdUtils.NounType( "separator",
+      [".", ","], "."
+    );
+ 
+function to_num(text){
+  if(decsep == ",") text = text.replace(".","").replace(",",".");
+  return +text.replace(/[^\d\.]/g,"")
+}
+
+/**
+ * retrieves selected table from DOM
+ */
+function getTable(selection){
+  var table = {
+    firstrow: selection.getRangeAt(0).startContainer,
+    lastrow: selection.getRangeAt(selection.rangeCount-1).endContainer
+  };
+  // for single (non-ctrl) selections
+  if (selection.rangeCount == 1) {
+    table = {
+      firstcell: jQuery(table.firstrow).closest("td,th")[0],
+      lastcell: jQuery(table.lastrow).closest("td,th")[0],
+      firstrow: jQuery(table.firstrow).closest("tr")[0],
+      lastrow: jQuery(table.lastrow).closest("tr")[0]
+    }
+  };
+  if (!table.lastrow) return;
+  table.rows = table.lastrow.rowIndex - table.firstrow.rowIndex + 1;
+  if (selection.rangeCount > 1) {
+    table.columns = selection.rangeCount/table.rows;
+    var text = selection.getRangeAt(0).toString();
+    jQuery(table.firstrow.children).each(
+      function(){
+        table.firstcell = this;
+        return !!this.textContent.search(text)
+      });
+    text = selection.getRangeAt(selection.rangeCount-1).toString();
+    table.lastcell = table.lastrow.children[table.columns + table.firstcell.cellIndex - 1];
+    if (table.lastcell.textContent == text) return table;
+    jQuery(table.lastrow.children).each(
+      function(){
+        table.lastcell = this;
+        return !!this.textContent.search(text)
+      });
+  }
+  return table;
+}
+
+/**
+ * Returns an array of the actual text in the cells 
+ */
+function tableToArray(table){
+  if ( table.firstrow ) var info = table;
+  var table = $( table.firstrow || table ).closest("table");
+  if ( table.length == 0 ) return;
+  return table.find("tr").map(
+    function(i){
+      if ( info && ( i < info.firstrow.rowIndex ||
+                     i > info.lastrow.rowIndex )) return null;
+      return $(this.children).map(
+        function(j){
+          if ( info && ( j < info.firstcell.cellIndex ||
+                     j > info.lastcell.cellIndex )) return null;
+          return $(this).text()
+        })
+    })
+}
+ 
+/**
+ * Returns an object with labels and other relevant data; transforms cells into numbers.
+ */
+function graphObj(tableData){
+  var rows = tableData.length;
+  var columns = tableData[0].length;
+ 
+  var data = {
+    labels: new Array(rows),
+    values: new Array(rows),
+    min: Number.MAX_VALUE,
+    max: Number.MIN_VALUE,
+    string: tableData
+  }
+  
+  // copy the first column into a array of labels, rest into 2 dimensional array of values
+  for(i=0; i<rows; i++) {
+	// create generic labels if only 1 column is selected
+	if (columns == 1) {
+		data.labels[i] = i;
+		data.values[i] = new Array(1)
+		data.values[i][0] = to_num(tableData[i][0]);
+	    if (data.values[i][0]<data.min) data.min = data.values[i][0];
+		if (data.values[i][0]>data.max) data.max = data.values[i][0];
+
+	}
+	else {
+		data.labels[i] = tableData[i][0];
+		data.values[i] = new Array(columns-1);
+		for (var j=1;j<columns; j++){
+		  data.values[i][j-1] = to_num(tableData[i][j]);
+		  if (data.values[i][j-1]<data.min) data.min = data.values[i][j-1];
+		  if (data.values[i][j-1]>data.max) data.max = data.values[i][j-1];
+		}
+	}
+  }
+ 
+  return data;
+}
+ 
+ 
+function transposeArray(inArray){
+  var rowsIn = inArray.length;
+  var columnsIn = inArray[0].length;
+  var outArray = new Array(columnsIn);
+ 
+  for(i=0; i<columnsIn; i++) {
+    outArray[i] = new Array(rowsIn);
+    for (var j=0;j<rowsIn; j++){
+      outArray[i][j] = inArray[j][i];
+    }
+  }
+  return outArray;
+}
+ 
+function formatValues(valArray) {
+  var rows = valArray.length;
+  var columns = valArray[0].length;
+  var values = "";
+ 
+  //  traverse table by columns to build values: delimit columns with commas, rows with pipes
+  for (var i=0; i<columns; i++){
+    for (var j=0;j<rows; j++){
+      values += (valArray[j][i]);
+      if (j<rows-1) values += ",";
+    }
+    if (i<columns-1) values += "|";
+  }
+  return values;
+}
+ 
+function formatLabels(labArray){
+  var rows = labArray.length;
+  var labels = "";
+  for(var i=0; i<rows; i++){
+    // add element to label string
+    labels += labArray[i];
+    // if not last row, add a pipe delimiter
+    if (i<rows-1) labels += "|";
+  }
+  return labels;
+}
+  
+function scaleTo100(valArray, maxVal){
+  var rows = valArray.length;
+  var columns = valArray[0].length;
+  var rescale = maxVal / 100;
+ 
+  //  traverse table by columns to build values: delimit columns with commas, rows with pipes
+  for (var i=0; i<columns; i++){
+    for (var j=0;j<rows; j++){
+      valArray[j][i] = valArray[j][i] / rescale;
+    }
+  }
+  return valArray;
+}
+ 
+function  dataToChart( args ) {
+  var data, table = getTable( CmdUtils.getWindow().getSelection() );
+  decsep = args.instrument.text;
+  if (table)
+    data = graphObj(tableToArray(table));
+ 
+  if( !data ) return null;
+  
+  data.labelquery = formatLabels(data.labels);
+  // pie charts only handle values up to 100, so scale them!
+  if( args.format.text == "pie" )
+    data.values = scaleTo100(data.values, data.max);
+  else if ( args.format.text == "tline" ) {
+    data.values = transposeArray(data.values);
+    args.format.text = "line";
+  }
+  data.valuequery = formatValues(data.values);
+ 
+  [ graphWidth, graphHeight ] = args.modifier.text.split("x");
+ 
+  var graphWidth = graphWidth || 400,
+      graphHeight = graphHeight || graphWidth /2;
+ 
+  if (graphHeight > 387) graphHeight = 387;
+  if (graphWidth > 774) graphWidth = 774;
+ 
+  if ( args.format.text == "bar" ) {
+    var ymin = (data.min * 0.75);
+    if (ymin < 10) ymin = 0;
+    if (data.max > 80 && data.max < 100) data.max = 100;
+  }else if ( args.format.text == "line" )
+    var ymin = (data.min - (data.max - data.min) * .1);
+  
+  var urlstart = ({ 
+        pie:"pc",
+        bar:"bvg&chxt=y&chbh=a",
+        line:"lc&chxt=y"
+      })[args.format.text],
+ 
+      urlend = ({ 
+        pie:"",
+        bar:colors,
+        line:colors
+      })[args.format.text];
+ 
+  img = "<img src='http://chart.earth2marsh.apigee.com/chart?cht="+urlstart+"&chs="+graphWidth+"x"+graphHeight+"&chl="+data.labelquery+"&chd=t:"+data.valuequery+"&chds="+ymin+","+data.max+"&chtxt=x,y&chxr=0,"+ymin+","+data.max+urlend+"'/>";
+  return img;
+ 
+}
+ 
+CmdUtils.CreateCommand({
+  names: ["chart"],
+  arguments: [ {role: "object", nountype: noun_arb_text, label: "Column of labels and column(s) of values"},
+               {role: "format", nountype: noun_type_chart},
+               {role: "modifier", nountype: noun_type_width_height},
+			   {role: "instrument", nountype: noun_type_decimal_separator}
+             ],
+  icon: "chrome://ubiquity/skin/icons/calculator.png",
+  description: "Turn numeric data into charts using the Google Charts API.",
+  help: "Select a table. Chart types supported: pie, bar, line and tline(transposed line graph). Decimal separators: \".\" and \",\"<p>Example: <em>Chart in Line of 500x500 with ,</em></p>",
+  homepage: "http://earth2marsh.com/ubiquity/",
+  author: {name: "Marsh Gardiner", email: "ubiquity@earth2marsh.com"},
+  license: "MPL",
+  preview: function(pblock, args) {
+    if (!args.object.html) {
+      this.previewDefault(pblock);
+      return;
+    }
+    var img = dataToChart( args );
+ 
+ 
+    if( !img )
+      jQuery(pblock).text( "Requires numbers to graph." );
+    else
+      jQuery(pblock).empty().append( img ).height( "15px" );
+  },
+ 
+  execute: function( args ) {
+    var img = dataToChart( args );
+    if( img ) CmdUtils.setSelection( img );
+  }
+})
+
+
+
+/** ************************************************************************************************
+ * Color
+ * Preview a textual color code
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["color", "preview-color"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://kuler.adobe.com/favicon.ico",
+  homepage: "https://gist.github.com/1100536",
+  author: {name:"g2010a"},
+  description: "Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.",
+
+  preview: function(pblock, input) {
+		// todo: intelligent recognition of format
+		var color = input.object.text;
+		if (color.length < 7) color = "#"+color;
+	    var html = "<div style='width:120px;height:120px;padding:80px;background-color:white'>"
+			+ "<div style='width:100%;height:100%;background-color:" + color + "'></div>"
+		"</div>"
+        pblock.innerHTML = html;
+  },
+  execute: function(input) {
+	var color = input.object.text;
+	if (color.length < 7) color = "#"+color;
+	CmdUtils.setSelection("<div style='width:12px;height:12px;display:inline-block;background-color:" + color + ";'></div>")
+  }
+})
+
+/** ************************************************************************************************
+ * Decode
+ * Decode URLs
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["decode"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://meyerweb.com/favicon.ico",
+  author: {name:"g2010a"},
+  homepage: "https://gist.github.com/1100536",
+  description: "Decodes URL-encoded text",
+
+  preview: function(pblock, input) {
+        pblock.innerHTML = decodeURIComponent(input.object.text.replace(/\+/g,  " "));
+  },
+  execute: function(input) {
+		CmdUtils.setSelection(decodeURIComponent(input.object.text.replace(/\+/g,  " ")));
+  }
+})
+
+/** ************************************************************************************************
+ * Dict
+ * Translate German / English
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["dict"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://www.dict.cc/favicon.ico",
+  homepage: "https://gist.github.com/1100536",
+  author: {name:"g2010a"},
+  description: "Searches Dict.cc for a German/English term and loads results in the preview pane.",
+
+  preview: function(pblock, input) {
+    CmdUtils.previewGet(pblock,
+      'http://pocket.dict.cc/?s=' + input.object.text,
+      null,
+      function(data){
+        var resultStart = data.indexOf('<div align="center" style="background-color:#36c;color:white;padding:2px">',0);
+        var beginPos = data.indexOf("<dt>", resultStart);
+        var endPos = 0;
+        var html = ""
+        while(beginPos != -1){
+          endPos = data.indexOf("</dd>", beginPos);
+          html = html + "<br>" + data.substring(beginPos, endPos);
+          beginPos = data.indexOf("<dt", endPos);
+        }   
+        pblock.innerHTML = CmdUtils.absUrl(html,"http://www.dict.cc/");
+      }
+    );
+  },
+  execute: function(args) {
+    var input = args.object;
+    var url = "http://www.dict.cc/?s={QUERY}"
+    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+    Utils.openUrlInBrowser(urlString);
+  }
+})
+
+/** ************************************************************************************************
+ * Dictes
+ * Translate German / Spanish
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["dictes","dees"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://www.dict.cc/favicon.ico",
+  homepage: "https://gist.github.com/1100536",
+  author: {name:"g2010a"},
+  description: "Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.",
+
+  preview: function(pblock, input) {
+    CmdUtils.previewGet(pblock,
+      'http://dees.pocket.dict.cc/?s=' + input.object.text,
+      null,
+      function(data){
+        var resultStart = data.indexOf('<div align="center" style="background-color:#36c;color:white;padding:2px">',0);
+        var beginPos = data.indexOf("<dt>", resultStart);
+        var endPos = 0;
+        var html = ""
+        while(beginPos != -1){
+          endPos = data.indexOf("</dd>", beginPos);
+          html = html + "<br>" + data.substring(beginPos, endPos);
+          beginPos = data.indexOf("<dt", endPos);
+        }   
+        pblock.innerHTML = CmdUtils.absUrl(html,"http://dees.dict.cc/");
+      }
+    );
+  },
+  execute: function(args) {
+    var input = args.object;
+    var url = "http://dees.dict.cc/?s={QUERY}"
+    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+    Utils.openUrlInBrowser(urlString);
+  }
+})
+
+/** ************************************************************************************************
+ * Encode
+ * Encode URLs
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["encode"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://meyerweb.com/favicon.ico",
+  author: {name:"g2010a"},
+  homepage: "https://gist.github.com/1100536",
+  description: "URL-encodes text",
+
+  preview: function(pblock, input) {
+        pblock.innerHTML = encodeURIComponent(input.object.text);
+  },
+  execute: function(input) {
+		CmdUtils.setSelection(encodeURIComponent(input.object.text));
+  }
+})
+
+/** 
+ * Fortune
+ * Gets a fortune cookie
+ */
+// TODO: accept optional length (short,long) and source category
+//TODO: paste HTML if in a page, TEXT if in a textarea
+CmdUtils.CreateCommand({
+  names: ["fortune", "fortune-cookie", "quote"],
+  arguments: [],
+  icon: "http://www.iheartquotes.com//images/favicon.png",
+  homepage: "https://gist.github.com/1100536",
+  author: {name:"g2010a"},
+  description: "Retrieves a Unix Fortune from the online service ihearquotes.com",
+  fortune_text: null,
+  preview: function(pblock, {object, source}) {
+	//pblock.innerHTML = 'retrieving ...';
+	var url = 'http://www.iheartquotes.com/api/v1/random?format=text&show_permalink=false&show_source=false';
+	//CmdUtils.log('hi', object, source)
+    CmdUtils.previewGet(pblock, url, null,
+      function(data){
+		this.fortune_text = data;
+        pblock.innerHTML = this.fortune_text;
+      }
+    );
+  },
+  execute: function(args) {
+    CmdUtils.setSelection(this.fortune_text)
+  }
+})
+
+/** ************************************************************************************************
+ * Ubiquity "grab-color" color grabbing command, v1.0
+ * by Jacob Seidelin, jseidein@nihilogic.dk, http://blog.nihilogic.dk/
+ * Updated and modified by g2010a
+ * *********************************************************************************************** */
+
+CmdUtils.CreateCommand({ 
+  names: ["get-color", "grab-color", "color-get"],
+  icon: "http://www.nihilogic.dk/favicon.ico",
+  homepage: "http://blog.nihilogic.dk/",
+  author: { name: "Jacob Seidelin", email: "jseidelin@nihilogic.dk"},
+  description: "Grab colors from web pages",
+  arguments: [{role:"format", label:"mode",nountype: noun_arb_text}],
+  preview: function( pblock, input ) {
+    var template = "Click anywhere on the page to pick up a color.<br/>Mode is either \"hex\" or \"rgb\" (defaults to \"hex\").";
+    pblock.innerHTML = CmdUtils.renderTemplate(template);
+  },
+  execute: function(input) {
+    var mode = jQuery.trim(input.format.text),
+        rgb = (mode == "rgb"),
+        win = CmdUtils.getWindowInsecure(),
+        doc = CmdUtils.getDocumentInsecure()
+
+    if (doc.getElementById("pixastic-color-picker-image")) 
+      return;
+
+    var hWin = CmdUtils.getHiddenWindow(),
+        shot = hWin.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas"),
+        width = win.innerWidth,
+        height = win.innerHeight
+    shot.mozOpaque = true;
+    shot.width = width;
+    shot.height = height;
+    shot.getContext("2d").drawWindow(win, win.scrollX, win.scrollY, width, height, "rgb(255,255,255)");
+
+    var img = doc.createElement("img");
+    img.style.position = "absolute";
+    img.style.zIndex = 0x7fffffff;
+    img.style.padding = img.margin = "0px";
+    img.style.border = "none";
+    img.style.left = win.scrollX + "px";
+    img.style.top = win.scrollY + "px";
+    img.style.cursor = "crosshair";
+    img.id = "pixastic-color-picker-image";
+
+    img.src = shot.toDataURL("image/png");
+
+    var box = doc.createElement("div");
+    box.style.width = "150px";
+    box.style.height = "15px";
+    box.style.border = "1px solid black";
+    box.style.color = "black";
+    box.style.fontFamily = "helvetica, sans-serif";
+    box.style.fontSize = "12px";
+    box.style.backgroundColor = "rgba(255,255,255,0.7)";
+    box.style.position = "absolute";
+    box.style.zIndex = 0x7fffffff;
+
+    var overflow = doc.body.style.overflow;
+    doc.body.style.overflow = "hidden";
+    doc.body.appendChild(img);
+    doc.body.appendChild(box);
+
+    var hex = function(n) {
+      var h = n.toString(16);
+      if (h.length == 1) h = "0" + h;
+      return h;
+    }
+
+    img.onmousemove = function(e) {
+       var data = shot.getContext("2d").getImageData(e.clientX, e.clientY, 1, 1).data;
+       var color = rgb ? "rgb(" + data[0] + "," + data[1] + "," + data[2] + ")"
+           : "#" + hex(data[0]) + hex(data[1]) + hex(data[2]);
+       box.innerHTML = "Color: " + color;
+       box.style.left = (e.clientX + win.scrollX + 10) + "px";
+       box.style.top = (e.clientY + win.scrollY + 10) + "px";
+    }
+
+    img.onclick = function(e) {
+       doc.body.removeChild(img);
+       doc.body.removeChild(box);
+       doc.body.style.overflow = overflow;
+       var data = shot.getContext("2d").getImageData(e.clientX, e.clientY, 1, 1).data;
+       var color = rgb ? "rgb(" + data[0] + "," + data[1] + "," + data[2] + ")"
+           : "#" + hex(data[0]) + hex(data[1]) + hex(data[2]);
+       win.prompt("Your selected color is", color);
+    }
+    //TODO: abort with ESC
+  }
+})
+
+/** ************************************************************************************************
+ * Lds
+ * Search lds.org 
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["lds"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://www.lds.org/favicon.ico",
+  homepage: "http://www.lds.org",
+  author: {name:"g2010a"},
+  description: "Searches LDS.org and loads results into the Preview pane.",
+
+  preview: function(pblock, input) {
+    CmdUtils.previewGet(pblock,
+      'http://www.lds.org/search?lang=eng&query='+input.object.text,
+      null,
+      function(data){
+        var html = ""
+        $(".results-list>li",data).each(function(i,d){ 
+          var headings = $('h3',d);
+          var newheadings = $('<p></p>').append(headings.html());
+		  headings.replaceWith(newheadings);
+		  var lists = $('ul.meta>li',d);
+          var newlists = $('<span></span>').append(lists.text());
+          lists.replaceWith(newlists);
+          if ($(d).html().trim() != "") html = html+ "<hr/>" + $(d).html()
+        })
+        pblock.innerHTML = html;
+      }
+    );
+  },
+  execute: function(args) {
+    var input = args.object;
+    var url = "http://www.lds.org/search?lang=eng&query={QUERY}"
+    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+    Utils.openUrlInBrowser(urlString);
+  }
+})
+
+
+/** ************************************************************************************************
+ * qrcode
+ * Generates a QR Code with the specified text encoded
+ * https://github.com/nhorvath/Ubiquity-QRCode
+ * *********************************************************************************************** */
+// FIXME: Quite buggy
+CmdUtils.CreateCommand({
+  names: ["qrcode", "qr"],
+  arguments: [{role:"object",label:"input",nountype:noun_arb_text}],
+  author: {name:"g2010a"},
+  description: "Generates a QR Code with the specified text encoded.",
+  __qrcode: function() {
+	//---------------------------------------------------------------------
+	//
+	// QR Code Generator for JavaScript
+	//
+	// Copyright (c) 2009 Kazuhiko Arase
+	//
+	// URL: http://www.d-project.com/
+	//
+	// Licensed under the MIT license:
+	//	http://www.opensource.org/licenses/mit-license.php
+	//
+	// The word 'QR Code' is registered trademark of
+	// DENSO WAVE INCORPORATED
+	//	http://www.denso-wave.com/qrcode/faqpatent-e.html
+	//
+	//---------------------------------------------------------------------
+	function o(e, t) { if (typeof e.length == "undefined") {    throw new Error(e.length + "/" + t)   }   var n = function() {    var n = 0;    while (n < e.length && e[n] == 0) {     n += 1    }    var r = new Array(e.length - n + t);    for (var i = 0; i < e.length - n; i += 1) {     r[i] = e[i + n]    }    return r   }();   var r = {};   r.getAt = function(e) {    return n[e]   };   r.getLength = function() {    return n.length   };   r.multiply = function(e) {    var t = new Array(r.getLength() + e.getLength() - 1);    for (var n = 0; n < r.getLength(); n += 1) {     for (var i = 0; i < e.getLength(); i += 1) {      t[n + i] ^= s.gexp(s.glog(r.getAt(n)) + s.glog(e.getAt(i)))     }    }    return o(t, 0)   };   r.mod = function(e) {    if (r.getLength() - e.getLength() < 0) {     return r    }    var t = s.glog(r.getAt(0)) - s.glog(e.getAt(0));    var n = new Array(r.getLength());    for (var i = 0; i < r.getLength(); i += 1) {     n[i] = r.getAt(i)    }    for (var i = 0; i < e.getLength(); i += 1) {     n[i] ^= s.gexp(s.glog(e.getAt(i)) + t)    }    return o(n, 0).mod(e)   };   return r  }
+	var e = function(e, t) {   var r = 236;   var s = 17;   var l = e;   var c = n[t];   var h = null;   var p = 0;   var v = null;   var m = new Array;   var g = {};   var y = function(e, t) {    p = l * 4 + 17;    h = function(e) {     var t = new Array(e);     for (var n = 0; n < e; n += 1) {      t[n] = new Array(e);      for (var r = 0; r < e; r += 1) {       t[n][r] = null      }     }     return t    }(p);    b(0, 0);    b(p - 7, 0);    b(0, p - 7);    S();    E();    T(e, t);    if (l >= 7) {     x(e)    }    if (v == null) {     v = k(l, c, m)    }    N(v, t)   };   var b = function(e, t) {    for (var n = -1; n <= 7; n += 1) {     if (e + n <= -1 || p <= e + n) continue;     for (var r = -1; r <= 7; r += 1) {      if (t + r <= -1 || p <= t + r) continue;      if (0 <= n && n <= 6 && (r == 0 || r == 6) || 0 <= r && r <= 6 && (n == 0 || n == 6) || 2 <= n && n <= 4 && 2 <= r && r <= 4) {       h[e + n][t + r] = true      } else {       h[e + n][t + r] = false      }     }    }   };   var w = function() {    var e = 0;    var t = 0;    for (var n = 0; n < 8; n += 1) {     y(true, n);     var r = i.getLostPoint(g);     if (n == 0 || e > r) {      e = r;      t = n     }    }    return t   };   var E = function() {    for (var e = 8; e < p - 8; e += 1) {     if (h[e][6] != null) {      continue     }     h[e][6] = e % 2 == 0    }    for (var t = 8; t < p - 8; t += 1) {     if (h[6][t] != null) {      continue     }     h[6][t] = t % 2 == 0    }   };   var S = function() {    var e = i.getPatternPosition(l);    for (var t = 0; t < e.length; t += 1) {     for (var n = 0; n < e.length; n += 1) {      var r = e[t];      var s = e[n];      if (h[r][s] != null) {       continue      }      for (var o = -2; o <= 2; o += 1) {       for (var u = -2; u <= 2; u += 1) {        if (o == -2 || o == 2 || u == -2 || u == 2 || o == 0 && u == 0) {         h[r + o][s + u] = true        } else {         h[r + o][s + u] = false        }       }      }     }    }   };   var x = function(e) {    var t = i.getBCHTypeNumber(l);    for (var n = 0; n < 18; n += 1) {     var r = !e && (t >> n & 1) == 1;     h[Math.floor(n / 3)][n % 3 + p - 8 - 3] = r    }    for (var n = 0; n < 18; n += 1) {     var r = !e && (t >> n & 1) == 1;     h[n % 3 + p - 8 - 3][Math.floor(n / 3)] = r    }   };   var T = function(e, t) {    var n = c << 3 | t;    var r = i.getBCHTypeInfo(n);    for (var s = 0; s < 15; s += 1) {     var o = !e && (r >> s & 1) == 1;     if (s < 6) {      h[s][8] = o     } else if (s < 8) {      h[s + 1][8] = o     } else {      h[p - 15 + s][8] = o     }    }    for (var s = 0; s < 15; s += 1) {     var o = !e && (r >> s & 1) == 1;     if (s < 8) {      h[8][p - s - 1] = o     } else if (s < 9) {      h[8][15 - s - 1 + 1] = o     } else {      h[8][15 - s - 1] = o     }    }    h[p - 8][8] = !e   };   var N = function(e, t) {    var n = -1;    var r = p - 1;    var s = 7;    var o = 0;    var u = i.getMaskFunction(t);    for (var a = p - 1; a > 0; a -= 2) {     if (a == 6) a -= 1;     while (true) {      for (var f = 0; f < 2; f += 1) {       if (h[r][a - f] == null) {        var l = false;        if (o < e.length) {         l = (e[o] >>> s & 1) == 1        }        var c = u(r, a - f);        if (c) {         l = !l        }        h[r][a - f] = l;        s -= 1;        if (s == -1) {         o += 1;         s = 7        }       }      }      r += n;      if (r < 0 || p <= r) {       r -= n;       n = -n;       break      }     }    }   };   var C = function(e, t) {    var n = 0;    var r = 0;    var s = 0;    var u = new Array(t.length);    var a = new Array(t.length);    for (var f = 0; f < t.length; f += 1) {     var l = t[f].dataCount;     var c = t[f].totalCount - l;     r = Math.max(r, l);     s = Math.max(s, c);     u[f] = new Array(l);     for (var h = 0; h < u[f].length; h += 1) {      u[f][h] = 255 & e.getBuffer()[h + n]     }     n += l;     var p = i.getErrorCorrectPolynomial(c);     var d = o(u[f], p.getLength() - 1);     var v = d.mod(p);     a[f] = new Array(p.getLength() - 1);     for (var h = 0; h < a[f].length; h += 1) {      var m = h + v.getLength() - a[f].length;      a[f][h] = m >= 0 ? v.getAt(m) : 0     }    }    var g = 0;    for (var h = 0; h < t.length; h += 1) {     g += t[h].totalCount    }    var y = new Array(g);    var b = 0;    for (var h = 0; h < r; h += 1) {     for (var f = 0; f < t.length; f += 1) {      if (h < u[f].length) {       y[b] = u[f][h];       b += 1      }     }    }    for (var h = 0; h < s; h += 1) {     for (var f = 0; f < t.length; f += 1) {      if (h < a[f].length) {       y[b] = a[f][h];       b += 1      }     }    }    return y   };   var k = function(e, t, n) {    var o = u.getRSBlocks(e, t);    var f = a();    for (var l = 0; l < n.length; l += 1) {     var c = n[l];     f.put(c.getMode(), 4);     f.put(c.getLength(), i.getLengthInBits(c.getMode(), e));     c.write(f)    }    var h = 0;    for (var l = 0; l < o.length; l += 1) {     h += o[l].dataCount    }    if (f.getLengthInBits() > h * 8) {     throw new Error("code length overflow. (" + f.getLengthInBits() + ">" + h * 8 + ")")    }    if (f.getLengthInBits() + 4 <= h * 8) {     f.put(0, 4)    }    while (f.getLengthInBits() % 8 != 0) {     f.putBit(false)    }    while (true) {     if (f.getLengthInBits() >= h * 8) {      break     }     f.put(r, 8);     if (f.getLengthInBits() >= h * 8) {      break     }     f.put(s, 8)    }    return C(f, o)   };   g.addData = function(e) {    var t = f(e);    m.push(t);    v = null   };   g.isDark = function(e, t) {    if (e < 0 || p <= e || t < 0 || p <= t) {     throw new Error(e + "," + t)    }    return h[e][t]   };   g.getModuleCount = function() {    return p   };   g.make = function() {    y(false, w())   };   g.createTableTag = function(e, t) {    e = e || 2;    t = typeof t == "undefined" ? e * 4 : t;    var n = "";    n += '<table style="';    n += " border-width: 0px; border-style: none;";    n += " border-collapse: collapse;";    n += " padding: 0px; margin: " + t + "px;";    n += '">';    n += "<tbody>";    for (var r = 0; r < g.getModuleCount(); r += 1) {     n += "<tr>";     for (var i = 0; i < g.getModuleCount(); i += 1) {      n += '<td style="';      n += " border-width: 0px; border-style: none;";      n += " border-collapse: collapse;";      n += " padding: 0px; margin: 0px;";      n += " width: " + e + "px;";      n += " height: " + e + "px;";      n += " background-color: ";      n += g.isDark(r, i) ? "#000000" : "#ffffff";      n += ";";      n += '"/>'     }     n += "</tr>"    }    n += "</tbody>";    n += "</table>";    return n   };   g.createImgTag = function(e, t) {    e = e || 2;    t = typeof t == "undefined" ? e * 4 : t;    var n = g.getModuleCount() * e + t * 2;    var r = t;    var i = n - t;    return d(n, n, function(t, n) {     if (r <= t && t < i && r <= n && n < i) {      var s = Math.floor((t - r) / e);      var o = Math.floor((n - r) / e);      return g.isDark(o, s) ? 0 : 1     } else {      return 1     }    })   };   return g  };
+	e.stringToBytes = function(e) {   var t = new Array;   for (var n = 0; n < e.length; n += 1) {    var r = e.charCodeAt(n);    t.push(r & 255)   }   return t  };
+	e.createStringToBytes = function(e, t) {   var n = function() {    var n = h(e);    var r = function() {     var e = n.read();     if (e == -1) throw new Error;     return e    };    var i = 0;    var s = {};    while (true) {     var o = n.read();     if (o == -1) break;     var u = r();     var a = r();     var f = r();     var l = String.fromCharCode(o << 8 | u);     var c = a << 8 | f;     s[l] = c;     i += 1    }    if (i != t) {     throw new Error(i + " != " + t)    }    return s   }();   var r = "?".charCodeAt(0);   return function(e) {    var t = new Array;    for (var i = 0; i < e.length; i += 1) {     var s = e.charCodeAt(i);     if (s < 128) {      t.push(s)     } else {      var o = n[e.charAt(i)];      if (typeof o == "number") {       if ((o & 255) == o) {        t.push(o)       } else {        t.push(o >>> 8);        t.push(o & 255)       }      } else {       t.push(r)      }     }    }    return t   }  };
+	var t = {   MODE_NUMBER: 1 << 0,   MODE_ALPHA_NUM: 1 << 1,   MODE_8BIT_BYTE: 1 << 2,   MODE_KANJI: 1 << 3  };
+	var n = {   L: 1,   M: 0,   Q: 3,   H: 2  };
+	var r = {   PATTERN000: 0,   PATTERN001: 1,   PATTERN010: 2,   PATTERN011: 3,   PATTERN100: 4,   PATTERN101: 5,   PATTERN110: 6,   PATTERN111: 7  };
+	var i = function() {   var e = [    [],    [6, 18],    [6, 22],    [6, 26],    [6, 30],    [6, 34],    [6, 22, 38],    [6, 24, 42],    [6, 26, 46],    [6, 28, 50],    [6, 30, 54],    [6, 32, 58],    [6, 34, 62],    [6, 26, 46, 66],    [6, 26, 48, 70],    [6, 26, 50, 74],    [6, 30, 54, 78],    [6, 30, 56, 82],    [6, 30, 58, 86],    [6, 34, 62, 90],    [6, 28, 50, 72, 94],    [6, 26, 50, 74, 98],    [6, 30, 54, 78, 102],    [6, 28, 54, 80, 106],    [6, 32, 58, 84, 110],    [6, 30, 58, 86, 114],    [6, 34, 62, 90, 118],    [6, 26, 50, 74, 98, 122],    [6, 30, 54, 78, 102, 126],    [6, 26, 52, 78, 104, 130],    [6, 30, 56, 82, 108, 134],    [6, 34, 60, 86, 112, 138],    [6, 30, 58, 86, 114, 142],    [6, 34, 62, 90, 118, 146],    [6, 30, 54, 78, 102, 126, 150],    [6, 24, 50, 76, 102, 128, 154],    [6, 28, 54, 80, 106, 132, 158],    [6, 32, 58, 84, 110, 136, 162],    [6, 26, 54, 82, 110, 138, 166],    [6, 30, 58, 86, 114, 142, 170]   ];   var n = 1 << 10 | 1 << 8 | 1 << 5 | 1 << 4 | 1 << 2 | 1 << 1 | 1 << 0;   var i = 1 << 12 | 1 << 11 | 1 << 10 | 1 << 9 | 1 << 8 | 1 << 5 | 1 << 2 | 1 << 0;   var u = 1 << 14 | 1 << 12 | 1 << 10 | 1 << 4 | 1 << 1;   var a = {};   var f = function(e) {    var t = 0;    while (e != 0) {     t += 1;     e >>>= 1    }    return t   };   a.getBCHTypeInfo = function(e) {    var t = e << 10;    while (f(t) - f(n) >= 0) {     t ^= n << f(t) - f(n)    }    return (e << 10 | t) ^ u   };   a.getBCHTypeNumber = function(e) {    var t = e << 12;    while (f(t) - f(i) >= 0) {     t ^= i << f(t) - f(i)    }    return e << 12 | t   };   a.getPatternPosition = function(t) {    return e[t - 1]   };   a.getMaskFunction = function(e) {    switch (e) {     case r.PATTERN000:      return function(e, t) {       return (e + t) % 2 == 0      };     case r.PATTERN001:      return function(e, t) {       return e % 2 == 0      };     case r.PATTERN010:      return function(e, t) {       return t % 3 == 0      };     case r.PATTERN011:      return function(e, t) {       return (e + t) % 3 == 0      };     case r.PATTERN100:      return function(e, t) {       return (Math.floor(e / 2) + Math.floor(t / 3)) % 2 == 0      };     case r.PATTERN101:      return function(e, t) {       return e * t % 2 + e * t % 3 == 0      };     case r.PATTERN110:      return function(e, t) {       return (e * t % 2 + e * t % 3) % 2 == 0      };     case r.PATTERN111:      return function(e, t) {       return (e * t % 3 + (e + t) % 2) % 2 == 0      };     default:      throw new Error("bad maskPattern:" + e)    }   };   a.getErrorCorrectPolynomial = function(e) {    var t = o([1], 0);    for (var n = 0; n < e; n += 1) {     t = t.multiply(o([1, s.gexp(n)], 0))    }    return t   };   a.getLengthInBits = function(e, n) {    if (1 <= n && n < 10) {     switch (e) {      case t.MODE_NUMBER:       return 10;      case t.MODE_ALPHA_NUM:       return 9;      case t.MODE_8BIT_BYTE:       return 8;      case t.MODE_KANJI:       return 8;      default:       throw new Error("mode:" + e)     }    } else if (n < 27) {     switch (e) {      case t.MODE_NUMBER:       return 12;      case t.MODE_ALPHA_NUM:       return 11;      case t.MODE_8BIT_BYTE:       return 16;      case t.MODE_KANJI:       return 10;      default:       throw new Error("mode:" + e)     }    } else if (n < 41) {     switch (e) {      case t.MODE_NUMBER:       return 14;      case t.MODE_ALPHA_NUM:       return 13;      case t.MODE_8BIT_BYTE:       return 16;      case t.MODE_KANJI:       return 12;      default:       throw new Error("mode:" + e)     }    } else {     throw new Error("type:" + n)    }   };   a.getLostPoint = function(e) {    var t = e.getModuleCount();    var n = 0;    for (var r = 0; r < t; r += 1) {     for (var i = 0; i < t; i += 1) {      var s = 0;      var o = e.isDark(r, i);      for (var u = -1; u <= 1; u += 1) {       if (r + u < 0 || t <= r + u) {        continue       }       for (var a = -1; a <= 1; a += 1) {        if (i + a < 0 || t <= i + a) {         continue        }        if (u == 0 && a == 0) {         continue        }        if (o == e.isDark(r + u, i + a)) {         s += 1        }       }      }      if (s > 5) {       n += 3 + s - 5      }     }    }    for (var r = 0; r < t - 1; r += 1) {     for (var i = 0; i < t - 1; i += 1) {      var f = 0;      if (e.isDark(r, i)) f += 1;      if (e.isDark(r + 1, i)) f += 1;      if (e.isDark(r, i + 1)) f += 1;      if (e.isDark(r + 1, i + 1)) f += 1;      if (f == 0 || f == 4) {       n += 3      }     }    }    for (var r = 0; r < t; r += 1) {     for (var i = 0; i < t - 6; i += 1) {      if (e.isDark(r, i) && !e.isDark(r, i + 1) && e.isDark(r, i + 2) && e.isDark(r, i + 3) && e.isDark(r, i + 4) && !e.isDark(r, i + 5) && e.isDark(r, i + 6)) {       n += 40      }     }    }    for (var i = 0; i < t; i += 1) {     for (var r = 0; r < t - 6; r += 1) {      if (e.isDark(r, i) && !e.isDark(r + 1, i) && e.isDark(r + 2, i) && e.isDark(r + 3, i) && e.isDark(r + 4, i) && !e.isDark(r + 5, i) && e.isDark(r + 6, i)) {       n += 40      }     }    }    var l = 0;    for (var i = 0; i < t; i += 1) {     for (var r = 0; r < t; r += 1) {      if (e.isDark(r, i)) {       l += 1      }     }    }    var c = Math.abs(100 * l / t / t - 50) / 5;    n += c * 10;    return n   };   return a  }();
+	var s = function() {   var e = new Array(256);   var t = new Array(256);   for (var n = 0; n < 8; n += 1) {    e[n] = 1 << n   }   for (var n = 8; n < 256; n += 1) {    e[n] = e[n - 4] ^ e[n - 5] ^ e[n - 6] ^ e[n - 8]   }   for (var n = 0; n < 255; n += 1) {    t[e[n]] = n   }   var r = {};   r.glog = function(e) {    if (e < 1) {     throw new Error("glog(" + e + ")")    }    return t[e]   };   r.gexp = function(t) {    while (t < 0) {     t += 255    }    while (t >= 256) {     t -= 255    }    return e[t]   };   return r  }();  var u = function() {   var e = [    [1, 26, 19],    [1, 26, 16],    [1, 26, 13],    [1, 26, 9],    [1, 44, 34],    [1, 44, 28],    [1, 44, 22],    [1, 44, 16],    [1, 70, 55],    [1, 70, 44],    [2, 35, 17],    [2, 35, 13],    [1, 100, 80],    [2, 50, 32],    [2, 50, 24],    [4, 25, 9],    [1, 134, 108],    [2, 67, 43],    [2, 33, 15, 2, 34, 16],    [2, 33, 11, 2, 34, 12],    [2, 86, 68],    [4, 43, 27],    [4, 43, 19],    [4, 43, 15],    [2, 98, 78],    [4, 49, 31],    [2, 32, 14, 4, 33, 15],    [4, 39, 13, 1, 40, 14],    [2, 121, 97],    [2, 60, 38, 2, 61, 39],    [4, 40, 18, 2, 41, 19],    [4, 40, 14, 2, 41, 15],    [2, 146, 116],    [3, 58, 36, 2, 59, 37],    [4, 36, 16, 4, 37, 17],    [4, 36, 12, 4, 37, 13],    [2, 86, 68, 2, 87, 69],    [4, 69, 43, 1, 70, 44],    [6, 43, 19, 2, 44, 20],    [6, 43, 15, 2, 44, 16]   ];   var t = function(e, t) {    var n = {};    n.totalCount = e;    n.dataCount = t;    return n   };   var r = {};   var i = function(t, r) {    switch (r) {     case n.L:      return e[(t - 1) * 4 + 0];     case n.M:      return e[(t - 1) * 4 + 1];     case n.Q:      return e[(t - 1) * 4 + 2];     case n.H:      return e[(t - 1) * 4 + 3];     default:      return undefined    }   };   r.getRSBlocks = function(e, n) {    var r = i(e, n);    if (typeof r == "undefined") {     throw new Error("bad rs block @ typeNumber:" + e + "/errorCorrectLevel:" + n)    }    var s = r.length / 3;    var o = new Array;    for (var u = 0; u < s; u += 1) {     var a = r[u * 3 + 0];     var f = r[u * 3 + 1];     var l = r[u * 3 + 2];     for (var c = 0; c < a; c += 1) {      o.push(t(f, l))     }    }    return o   };   return r  }();
+	var a = function() {   var e = new Array;   var t = 0;   var n = {};   n.getBuffer = function() {    return e   };   n.getAt = function(t) {    var n = Math.floor(t / 8);    return (e[n] >>> 7 - t % 8 & 1) == 1   };   n.put = function(e, t) {    for (var r = 0; r < t; r += 1) {     n.putBit((e >>> t - r - 1 & 1) == 1)    }   };   n.getLengthInBits = function() {    return t   };   n.putBit = function(n) {    var r = Math.floor(t / 8);    if (e.length <= r) {     e.push(0)    }    if (n) {     e[r] |= 128 >>> t % 8    }    t += 1   };   return n  };
+	var f = function(n) {   var r = t.MODE_8BIT_BYTE;   var i = n;   var s = e.stringToBytes(n);   var o = {};   o.getMode = function() {    return r   };   o.getLength = function(e) {    return s.length   };   o.write = function(e) {    for (var t = 0; t < s.length; t += 1) {     e.put(s[t], 8)    }   };   return o  };
+	var l = function() {   var e = new Array;   var t = {};   t.writeByte = function(t) {    e.push(t & 255)   };   t.writeShort = function(e) {    t.writeByte(e);    t.writeByte(e >>> 8)   };   t.writeBytes = function(e, n, r) {    n = n || 0;    r = r || e.length;    for (var i = 0; i < r; i += 1) {     t.writeByte(e[i + n])    }   };   t.writeString = function(e) {    for (var n = 0; n < e.length; n += 1) {     t.writeByte(e.charCodeAt(n))    }   };   t.toByteArray = function() {    return e   };   t.toString = function() {    var t = "";    t += "[";    for (var n = 0; n < e.length; n += 1) {     if (n > 0) {      t += ","     }     t += e[n]    }    t += "]";    return t   };   return t  };
+	var c = function() {   var e = 0;   var t = 0;   var n = 0;   var r = "";   var i = {};   var s = function(e) {    r += String.fromCharCode(o(e & 63))   };   var o = function(e) {    if (e < 0) {} else if (e < 26) {     return 65 + e    } else if (e < 52) {     return 97 + (e - 26)    } else if (e < 62) {     return 48 + (e - 52)    } else if (e == 62) {     return 43    } else if (e == 63) {     return 47    }    throw new Error("n:" + e)   };   i.writeByte = function(r) {    e = e << 8 | r & 255;    t += 8;    n += 1;    while (t >= 6) {     s(e >>> t - 6);     t -= 6    }   };   i.flush = function() {    if (t > 0) {     s(e << 6 - t);     e = 0;     t = 0    }    if (n % 3 != 0) {     var i = 3 - n % 3;     for (var o = 0; o < i; o += 1) {      r += "="     }    }   };   i.toString = function() {    return r   };   return i  };
+	var h = function(e) {   var t = e;   var n = 0;   var r = 0;   var i = 0;   var s = {};   s.read = function() {    while (i < 8) {     if (n >= t.length) {      if (i == 0) {       return -1      }      throw new Error("unexpected end of file./" + i)     }     var e = t.charAt(n);     n += 1;     if (e == "=") {      i = 0;      return -1     } else if (e.match(/^\s$/)) {      continue     }     r = r << 6 | o(e.charCodeAt(0));     i += 6    }    var s = r >>> i - 8 & 255;    i -= 8;    return s   };   var o = function(e) {    if (65 <= e && e <= 90) {     return e - 65    } else if (97 <= e && e <= 122) {     return e - 97 + 26    } else if (48 <= e && e <= 57) {     return e - 48 + 52    } else if (e == 43) {     return 62    } else if (e == 47) {     return 63    } else {     throw new Error("c:" + e)    }   };   return s  };
+	var p = function(e, t) {   var n = e;   var r = t;   var i = new Array(e * t);   var s = {};   s.setPixel = function(e, t, r) {    i[t * n + e] = r   };   s.write = function(e) {    e.writeString("GIF87a");    e.writeShort(n);    e.writeShort(r);    e.writeByte(128);    e.writeByte(0);    e.writeByte(0);    e.writeByte(0);    e.writeByte(0);    e.writeByte(0);    e.writeByte(255);    e.writeByte(255);    e.writeByte(255);    e.writeString(",");    e.writeShort(0);    e.writeShort(0);    e.writeShort(n);    e.writeShort(r);    e.writeByte(0);    var t = 2;    var i = u(t);    e.writeByte(t);    var s = 0;    while (i.length - s > 255) {     e.writeByte(255);     e.writeBytes(i, s, 255);     s += 255    }    e.writeByte(i.length - s);    e.writeBytes(i, s, i.length - s);    e.writeByte(0);    e.writeString(";")   };   var o = function(e) {    var t = e;    var n = 0;    var r = 0;    var i = {};    i.write = function(e, i) {     if (e >>> i != 0) {      throw new Error("length over")     }     while (n + i >= 8) {      t.writeByte(255 & (e << n | r));      i -= 8 - n;      e >>>= 8 - n;      r = 0;      n = 0     }     r = e << n | r;     n = n + i    };    i.flush = function() {     if (n > 0) {      t.writeByte(r)     }    };    return i   };   var u = function(e) {    var t = 1 << e;    var n = (1 << e) + 1;    var r = e + 1;    var s = a();    for (var u = 0; u < t; u += 1) {     s.add(String.fromCharCode(u))    }    s.add(String.fromCharCode(t));    s.add(String.fromCharCode(n));    var f = l();    var c = o(f);    c.write(t, r);    var h = 0;    var p = String.fromCharCode(i[h]);    h += 1;    while (h < i.length) {     var d = String.fromCharCode(i[h]);     h += 1;     if (s.contains(p + d)) {      p = p + d     } else {      c.write(s.indexOf(p), r);      if (s.size() < 4095) {       if (s.size() == 1 << r) {        r += 1       }       s.add(p + d)      }      p = d     }    }    c.write(s.indexOf(p), r);    c.write(n, r);    c.flush();    return f.toByteArray()   };   var a = function() {    var e = {};    var t = 0;    var n = {};    n.add = function(r) {     if (n.contains(r)) {      throw new Error("dup key:" + r)     }     e[r] = t;     t += 1    };    n.size = function() {     return t    };    n.indexOf = function(t) {     return e[t]    };    n.contains = function(t) {     return typeof e[t] != "undefined"    };    return n   };   return s  };
+	var d = function(e, t, n, r) {   var i = p(e, t);   for (var s = 0; s < t; s += 1) {    for (var o = 0; o < e; o += 1) {     i.setPixel(o, s, n(o, s))    }   }   var u = l();   i.write(u);   var a = c();   var f = u.toByteArray();   for (var h = 0; h < f.length; h += 1) {    a.writeByte(f[h])   }   a.flush();   var d = "";   d += "<img";   d += ' src="';   d += "data:image/gif;base64,";   d += a;   d += '"';   d += ' width="';   d += e;   d += '"';   d += ' height="';   d += t;   d += '"';   if (r) {    d += ' alt="';    d += r;    d += '"'   }   d += "/>";   return d  };
+	return e
+  }(),
+  __generate_qrcode: function(text, typeNumber, errorCorrectLevel) {
+		var qr = this.__qrcode(typeNumber || 4, errorCorrectLevel || 'M');
+		qr.addData(text);
+		qr.make();
+		return qr.createTableTag(6,6);
+		//return qr.createImgTag();
+	},
+  preview: function(pblock, input) {
+	var text = input.object.text
+    pblock.innerHTML = this.__generate_qrcode(text)
+  },
+  execute: function(args) {
+    var input = args.object;
+    var url = "http://chart.apis.google.com/chart?cht=qr&chld=M|4&chs=350x350&chl={QUERY}"
+    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+    Utils.openUrlInBrowser(urlString);
+  }
+});
+
+
+
+/** ************************************************************************************************
+ * stock-chart
+ * Get a stock chart
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+    names: ["stock-chart"],
+    homepage: "http://hoffstein.net/ubiquity/stock-chart.html",
+    author: { name: "Ben Hoffstein", email: "ben@hoffstein.net" },
+    license: "MPL",
+    description: "Displays a stock chart for the given ticker (from Yahoo! finance).",
+    arguments: [{ role:'object', nountype: noun_arb_text, label: 'input' }],
+    preview: function(pblock, args) {
+		var input = args.object
+        var searchText = jQuery.trim(input.text);
+        if (searchText.length < 1) {
+            pblock.innerHTML = "Retrieves stock chart for ticker";
+            return;
+        }
+		var url = "http://chart.finance.yahoo.com/z?s={QUERY}";
+        var query = jQuery.trim(searchText);
+        var urlString = url.replace("{QUERY}", encodeURIComponent(query))
+		pblock.innerHTML = "1D <br/><img src='"+urlString+"&t=1d&q=l&l=off&z=s&p=m30,m200'/>"
+                        + "<br/>6M <br/><img src='"+urlString+"&t=6m&q=l&l=off&z=s&p=m30,m200'/>"
+						+ "<br/>3 YR<br/><img src='"+urlString+"&t=3y&q=l&l=off&z=s&p=m30,m200'/>";
+    },
+	
+  execute: function(args) {
+    var input = args.object;
+    var url = "http://finance.yahoo.com/q?s={QUERY}&ql=0"
+    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+    Utils.openUrlInBrowser(urlString);
+  }
+})
+
+/** ************************************************************************************************
+ * Text2Html
+ * Render plain text as html
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["text2html", "html","render html"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: null,
+  homepage: "https://gist.github.com/1100536",
+  author: {name:"g2010a"},
+  description: "Renders plain text as HTML.",
+  
+  preview: function(pblock, input) {
+        pblock.innerHTML = decodeURIComponent(input.object.text);
+  },
+  execute: function(input) {
+		CmdUtils.setSelection(input.object.text);
+  }
+})
+
+/** ************************************************************************************************
+ * wolf
+ * wolfram|alpha with dynamic preview
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["wolf", "wolfram", "wolframalpha", "wolfram alpha"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://www.wolframalpha.com/favicon.ico",
+  homepage: "https://gist.github.com/1100536",
+  author: {name:"g2010a"},
+  description: "Searches WolframAlpha and loads results in to Preview pane.",
+
+  preview: function(pblock, input) {
+    CmdUtils.previewGet(pblock,
+      'http://www.wolframalpha.com/widget/input/?input='+input.object.text+'&id=d1506f31ac81b12a37f93ca40a79515&showAssumptions=0',
+      null,
+      function(data){
+        var html = "<div style='background-color: #fff; color:#000; padding-left: 6px; border-radius: 10px; margin-right: 4px;'>"
+        jQuery("div.pod",data).each(function(i,d){ 
+          jQuery("a",d).replaceWith("<span style='font-size:smaller; color:#ccc'>[link removed]</span>")
+          jQuery("hr",d).remove()
+          var headings = jQuery('h2',d);
+          var newheadings = jQuery('<p></p>').append(headings.text());
+          headings.replaceWith(newheadings);
+          if (jQuery(d).html().trim() != "") html = html+ "<hr/>" + jQuery(d).html()
+          else html = html + "<hr/> [this section can't be loaded]"
+        })
+        //html = data;
+        html = html + "</div>"
+        pblock.innerHTML = html;
+      }
+    );
+  },
+  execute: function(args) {
+    var input = args.object;
+    var url = "http://www.wolframalpha.com/input/?i={QUERY}"
+    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+    Utils.openUrlInBrowser(urlString);
+  }
+})
+
+]]>
+</script>
+</body>
+</html>
