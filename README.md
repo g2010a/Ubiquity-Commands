@@ -3,14 +3,17 @@ Ubiquity-Commands
 
 Ubiquity Commands
 
-This XHTML feed contains extended commands for Mozilla's Ubiquity.
+This XHTML feed contains extended commands for Mozilla's Ubiquity. Ubiquity is an extension for the Firefox web browser; it provides
+a rich command area as a Heads-Up-Display. By adding commands to Ubiquity, you extend the functionality available to you--be it 
+handling repetitive tasks, pulling supplementary information or cheering you up. It rocks.
 
 Get Ubiquity here: https://bitbucket.org/satyr/ubiquity/downloads/tip.xpi
 
 To install the commands either
   * Copy and paste them into Ubiquity's editor ("edit ubiquity commands" command)
   * ... or download the .xhtml file and "subscribe" to your local copy of it by dragging it into Firefox
-  * I'm working on a way to subscribe to the live feed so you automatically get all changes
+  * ... or subscrbe to the feed and allow auto-updates by downloading the file Drag-me-into-Firefox-to-subscribe-to-the-feed.xhtml into 
+  Firefox
 
 Bookmarklet commands
   * diaspora: Share the current page on Diaspora
