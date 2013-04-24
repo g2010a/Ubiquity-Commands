@@ -18,6 +18,7 @@
     <item>plus: Share the current page on Google Plus</item>
     <item>textarea2editor: Triple-click a plain textarea to turn it into a Code Editor using the ACE Bookmarklet</item>
     <item>wishlist: Execute the Amazon Universal Wishlist bookmarklet</item>
+	<item>aarne-thompson: Returns the type of an aarne-thompson number</item>
     <item>Amazon.de: Searches Amazon.de for items matching your words.</item>
     <item>bigpicture: Previews Boston.com's The Big Picture (from RSS Feed)</item>
     <item>chart: Turn numeric data into charts using the Google Charts API</item>
@@ -152,6 +153,34 @@ CmdUtils.makeBookmarkletCommand({
 	names: ["wishlist", "Amazon universal wishlist"],
 	description: "Execute the Amazon Universal Wishlist bookmarklet",
 	url: "javascript:(function(){var%20w=window,l=w.location,d=w.document,s=d.createElement('script'),e=encodeURIComponent,x='undefined',u='http://www.amazon.com/wishlist/add';if(typeof%20s!='object')l.href=u+'?u='+e(l)+'&t='+e(d.title);function%20g(){if(d.readyState&&d.readyState!='complete'){setTimeout(g,200);}else{if(typeof%20AUWLBook==x)s.setAttribute('src',u+'.js?loc='+e(l)),d.body.appendChild(s);function%20f(){(typeof%20AUWLBook==x)?setTimeout(f,200):AUWLBook.showPopover();}f();}}g();}())"
+})
+
+/** ************************************************************************************************
+ * aarne-thompson
+ * Returns the type of an aarne-thompson number
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["aarne-thompson", "atnum"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://mapicons.nicolasmollet.com/wp-content/uploads/mapicons/shape-default/color-3875d7/shapecolor-no/shadow-0/border-no/symbolstyle-color/symbolshadowstyle-white/gradient-no/book.png",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
+  author: {name:"g2010a"},
+  description: "Returns the type of an aarne-thompson number. Useful for folklorists (see <a href='http://en.wikipedia.org/wiki/Aarne%E2%80%93Thompson_classification_system'>Wikipedia entry</a>)",
+  __db: [{"type":"Wild Animals","min":1,"max":99}, {"type":"The Clever Fox (Other Animal)","min":1,"max":69}, {"type":"Other Wild Animals","min":70,"max":99}, {"type":"Wild Animals and Domestic Animals","min":100,"max":149}, {"type":"Wild Animals and Humans","min":150,"max":199}, {"type":"Domestic Animals","min":200,"max":219}, {"type":"Other Animals and Objects","min":220,"max":299}, {"type":"Supernatural Adversaries","min":300,"max":399}, {"type":"Supernatural or Enchanted Wife (Husband) or Other Relative","min":400,"max":459}, {"type":"Wife","min":400,"max":424}, {"type":"Husband","min":425,"max":449}, {"type":"Brother or Sister","min":450,"max":459}, {"type":"Supernatural Tasks","min":460,"max":499}, {"type":"Supernatural Helpers","min":500,"max":559}, {"type":"Magic Objects","min":560,"max":649}, {"type":"Supernatural Power or Knowledge","min":650,"max":699}, {"type":"Other Tales of the Supernatural","min":700,"max":749}, {"type":"God Rewards and Punishes","min":750,"max":779}, {"type":"The Truth Comes to Light","min":780,"max":799}, {"type":"Heaven","min":800,"max":809}, {"type":"The Devil","min":810,"max":826}, {"type":"Other Religious Tales","min":827,"max":849}, {"type":"The Man Marries the Princess","min":850,"max":869}, {"type":"The Woman Marries the Prince","min":870,"max":879}, {"type":"Proofs of FidelitY and Innocence","min":880,"max":899}, {"type":"The Obstinate Wife Learns to Obey","min":900,"max":909}, {"type":"Good Precepts","min":910,"max":919}, {"type":"Clever Acts and Words","min":920,"max":929}, {"type":"Tales of Fate","min":930,"max":949}, {"type":"Robbers and Murderers","min":950,"max":969}, {"type":"Other Realistic Tales","min":970,"max":999}, {"type":"Labor Contract","min":1000,"max":1029}, {"type":"Partnership between Man and Ogre","min":1030,"max":1059}, {"type":"Contest between Man and Ogre","min":1060,"max":1114}, {"type":"Man Kills (Injures) Ogre","min":1115,"max":1144}, {"type":"Ogre Frightened by Man","min":1145,"max":1154}, {"type":"Man Outwits the Devil","min":1155,"max":1169}, {"type":"Souls Saved from the Devil","min":1170,"max":1199}, {"type":"Stories about a Fool","min":1200,"max":1349}, {"type":"Stories about Married Couples","min":1350,"max":1439}, {"type":"The Foolish Wife and Her Husband","min":1380,"max":1404}, {"type":"The Foolish Husband and His Wife","min":1405,"max":1429}, {"type":"The Foolish Couple","min":1430,"max":1439}, {"type":"Stories about a Woman","min":1440,"max":1524}, {"type":"Looking for a Wife","min":1450,"max":1474}, {"type":"Jokes about Old Maids","min":1475,"max":1499}, {"type":"Other Stories about Women","min":1500,"max":1524}, {"type":"Stories about a Man","min":1525,"max":1724}, {"type":"The Clever Man","min":1525,"max":1639}, {"type":"Lucky Accidents","min":1640,"max":1674}, {"type":"The Stupid Man","min":1675,"max":1724}, {"type":"Jokes about Clergymen and Religious Figures","min":1725,"max":1849}, {"type":"The Clergyman is Tricked","min":1725,"max":1774}, {"type":"Clergyman and Sexton","min":1775,"max":1799}, {"type":"Other Jokes about Religious Figures","min":1800,"max":1849}, {"type":"Anecdotes about Other Groups of People","min":1850,"max":1874}, {"type":"Tall Tales","min":1875,"max":1999}, {"type":"Cumulative Tales","min":2000,"max":2100}, {"type":"Chains Based on Numbers, Objects, Animals, or Names","min":2000,"max":2020}, {"type":"Chains Involving Death","min":2021,"max":2024}, {"type":"Chains Involving Eating","min":2025,"max":2028}, {"type":"Chains Involving Other Events","min":2029,"max":2075}, {"type":"Catch Tales","min":2200,"max":2299}, {"type":"Other Formula Tales","min":2300,"max":2399}],
+  preview: function(pblock, input) {
+    var input = jQuery.trim(input.object.text).replace(/\D+/, ''),
+		results = [],
+		types = this.__db
+					.filter(function(d){
+						return input >= d.min && input <=d.max
+					})
+					.map(function(d){
+						results.push(d.type)
+					})
+					
+		pblock.innerHTML = results.length == 0 ? "No match found" 
+								: "<ul><li>" + results.join("</li><li>") + "</li></ul>"
+  }
 })
 
 /** ************************************************************************************************
@@ -333,7 +362,7 @@ CmdUtils.CreateCommand({
 CmdUtils.CreateCommand({
     names: ['bigpicture'],
     icon: 'http://www.boston.com/favicon.ico',
-    homepage: '',
+    homepage: 'https://github.com/g2010a/Ubiquity-Commands',
     author: {name:'g2010a'},
     description: 'Previews Boston.com\'s The Big Picture (from RSS Feed)',
     preview: function(pblock, input){
@@ -639,7 +668,7 @@ CmdUtils.CreateCommand({
   names: ["color", "preview-color"],
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://kuler.adobe.com/favicon.ico",
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.",
   preview: function(pblock, input) {
@@ -667,7 +696,7 @@ CmdUtils.CreateCommand({
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://meyerweb.com/favicon.ico",
   author: {name:"g2010a"},
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   description: "Decodes URL-encoded text",
   preview: function(pblock, input) {
         pblock.innerHTML = decodeURIComponent(input.object.text.replace(/\+/g,  " "));
@@ -685,7 +714,7 @@ CmdUtils.CreateCommand({
   names: ["dict"],
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://www.dict.cc/favicon.ico",
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Searches Dict.cc for a German/English term and loads results in the preview pane.",
   preview: function(pblock, input) {
@@ -722,7 +751,7 @@ CmdUtils.CreateCommand({
   names: ["dictes","dees"],
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://www.dict.cc/favicon.ico",
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.",
 
@@ -761,7 +790,7 @@ CmdUtils.CreateCommand({
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://meyerweb.com/favicon.ico",
   author: {name:"g2010a"},
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   description: "URL-encodes text",
 
   preview: function(pblock, input) {
@@ -782,7 +811,7 @@ CmdUtils.CreateCommand({
   names: ["fortune", "fortune-cookie", "quote"],
   arguments: [],
   icon: "http://www.iheartquotes.com//images/favicon.png",
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Retrieves a Unix Fortune from the online service ihearquotes.com",
   fortune_text: null,
@@ -901,7 +930,7 @@ CmdUtils.CreateCommand({
   names: ["lds"],
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://www.lds.org/favicon.ico",
-  homepage: "http://www.lds.org",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Searches LDS.org and loads results into the Preview pane.",
 
@@ -940,11 +969,11 @@ CmdUtils.CreateCommand({
  * previously used https://github.com/nhorvath/Ubiquity-QRCode
  * currently uses qrserver.com api
  * *********************************************************************************************** */
-// FIXME: Quite buggy
 CmdUtils.CreateCommand({
   names: ["qrcode", "qr"],
   arguments: [{role:"object",label:"input",nountype:noun_arb_text}],
   author: {name:"g2010a"},
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   icon: "http://api.qrserver.com/v1/create-qr-code/?data=q&size=32x32",
   description: "Generates a QR Code with the specified text encoded.",
   __baseurl: "http://api.qrserver.com/v1/create-qr-code/?data={QUERY}&size=400x400",
@@ -1003,7 +1032,7 @@ CmdUtils.CreateCommand({
   names: ["text2html", "html","render html"],
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: null,
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Renders plain text as HTML.",
   
@@ -1023,7 +1052,7 @@ CmdUtils.CreateCommand({
   names: ["wolf", "wolfram", "wolframalpha", "wolfram alpha"],
   arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
   icon: "http://www.wolframalpha.com/favicon.ico",
-  homepage: "https://gist.github.com/1100536",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
   author: {name:"g2010a"},
   description: "Searches WolframAlpha and loads results in to Preview pane.",
 
