@@ -273,9 +273,9 @@ CmdUtils.CreateCommand({
     {role: "object", nountype: noun_arb_text, label: "search term"},
     {role: "format", nountype: noun_type_amazon_de_index}],
   execute: function amazon_execute({object: {text}, format: {data}}) {
-    Utils.openUrlInBrowser(
-      AmazonDE + "s/ref=nb_ss_gw" +
-      Utils.paramsToString({url: "node=" + data, "field-keywords": text}));
+    Utils.openUrlInBrowser( 
+      AmazonDE + "s/ref=nb_ss_noss" +
+      Utils.paramsToString({"__mk_de_DE": "%C3%85M%C3%85Z%C3%95%C3%91", url: "search-alias%3D" + data, "field-keywords": text}))
   },
   preview: function(previewBlock,
                     {object: {text, summary}, format: {text: searchIndex}}) {
