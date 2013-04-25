@@ -23,6 +23,7 @@ Bookmarklet commands
 
 Commands
   * wishlist: Execute the Amazon Universal Wishlist bookmarklet
+  * aarne-thompson: Returns the type of an aarne-thompson number
   * Amazon.de: Searches Amazon.de for items matching your words.
   * bigpicture: Previews Boston.com's The Big Picture (from RSS Feed)
   * chart: Turn numeric data into charts using the Google Charts API
