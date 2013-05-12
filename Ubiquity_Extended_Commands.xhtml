@@ -116,6 +116,30 @@ img { border-radius: 10px; }
 {/for}
 </div>
 
+<!-- ============================================ -->
+<!--	Template for dict.cc					  -->
+<!-- ============================================ -->
+<div id="dict">
+<style>
+.entry {
+	padding: 10px;
+}
+.entry h2 {
+	font-size: .9rem;
+	margin: 0px;
+}
+.entry div {
+	margin-left: 20px;
+}
+</style>
+{for item in items}
+	<div class='entry ${item.class}'>
+		<h2>${item.entry}</h2>
+		<div>${item.description}</div>
+	</div>
+{/for}
+</div>
+
 <script type="?" class="commands">
 <![CDATA[
 /**
@@ -711,36 +735,40 @@ CmdUtils.CreateCommand({
  * Translate German / English
  * *********************************************************************************************** */
 CmdUtils.CreateCommand({
-  names: ["dict"],
-  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
-  icon: "http://www.dict.cc/favicon.ico",
-  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
-  author: {name:"g2010a"},
-  description: "Searches Dict.cc for a German/English term and loads results in the preview pane.",
-  preview: function(pblock, input) {
-    CmdUtils.previewGet(pblock,
-      'http://pocket.dict.cc/?s=' + input.object.text,
-      null,
-      function(data){
-        var resultStart = data.indexOf('<div align="center" style="background-color:#36c;color:white;padding:2px">',0);
-        var beginPos = data.indexOf("<dt>", resultStart);
-        var endPos = 0;
-        var html = ""
-        while(beginPos != -1){
-          endPos = data.indexOf("</dd>", beginPos);
-          html = html + "<br>" + data.substring(beginPos, endPos);
-          beginPos = data.indexOf("<dt", endPos);
-        }   
-        pblock.innerHTML = CmdUtils.absUrl(html,"http://www.dict.cc/");
-      }
-    );
-  },
-  execute: function(args) {
-    var input = args.object;
-    var url = "http://www.dict.cc/?s={QUERY}"
-    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
-    Utils.openUrlInBrowser(urlString);
-  }
+	names: ["dict"],
+	arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+	icon: "http://www.dict.cc/favicon.ico",
+	homepage: 'https://github.com/g2010a/Ubiquity-Commands',
+	author: {name:"g2010a"},
+	description: "Searches Dict.cc for a German/English term and loads results in the preview pane.",
+	preview: function(pblock, input) {
+		var text = $.trim(input.object.text)
+		pblock.innerHTML = this.description + (text ? "<p>... searching for '" + text + "'</p>" : "")
+		if (text) {
+			CmdUtils.previewGet(pblock,
+				'http://pocket.dict.cc/?s=' + text,
+				null,
+				function(data){
+					var items = [],
+						entries = $('dl dt', data).each(function(i,dt){
+							var dds = $(this).nextUntil('dt')
+							items.push({ entry: $(this).html(), description: dds.html(), class: i%2 ? 'odd' : 'even' })
+						})
+					html = CmdUtils.renderTemplate(
+						feed.dom.getElementById("dict").innerHTML,
+						{ items: items }
+					)
+					pblock.innerHTML = CmdUtils.absUrl(html,"http://www.dict.cc/")
+				}
+			)
+		}
+	},
+	execute: function(args) {
+		var input = args.object;
+		var url = "http://www.dict.cc/?s={QUERY}"
+		var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+		Utils.openUrlInBrowser(urlString);
+	}
 })
 
 /** ************************************************************************************************
@@ -748,37 +776,40 @@ CmdUtils.CreateCommand({
  * Translate German / Spanish
  * *********************************************************************************************** */
 CmdUtils.CreateCommand({
-  names: ["dictes","dees"],
-  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
-  icon: "http://www.dict.cc/favicon.ico",
-  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
-  author: {name:"g2010a"},
-  description: "Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.",
-
-  preview: function(pblock, input) {
-    CmdUtils.previewGet(pblock,
-      'http://dees.pocket.dict.cc/?s=' + input.object.text,
-      null,
-      function(data){
-        var resultStart = data.indexOf('<div align="center" style="background-color:#36c;color:white;padding:2px">',0);
-        var beginPos = data.indexOf("<dt>", resultStart);
-        var endPos = 0;
-        var html = ""
-        while(beginPos != -1){
-          endPos = data.indexOf("</dd>", beginPos);
-          html = html + "<br>" + data.substring(beginPos, endPos);
-          beginPos = data.indexOf("<dt", endPos);
-        }   
-        pblock.innerHTML = CmdUtils.absUrl(html,"http://dees.dict.cc/");
-      }
-    );
-  },
-  execute: function(args) {
-    var input = args.object;
-    var url = "http://dees.dict.cc/?s={QUERY}"
-    var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
-    Utils.openUrlInBrowser(urlString);
-  }
+	names: ["dictes","dees"],
+	arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+	icon: "http://www.dict.cc/favicon.ico",
+	homepage: 'https://github.com/g2010a/Ubiquity-Commands',
+	author: {name:"g2010a"},
+	description: "Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.",
+	preview: function(pblock, input) {
+		var text = $.trim(input.object.text)
+		pblock.innerHTML = this.description + (text ? "<p>... searching for '" + text + "'</p>" : "")
+		if (text) {
+			CmdUtils.previewGet(pblock,
+				'http://dees.pocket.dict.cc/?s=' + text,
+				null,
+				function(data){
+					var items = [],
+						entries = $('dl dt', data).each(function(i,dt){
+							var dds = $(this).nextUntil('dt')
+							items.push({ entry: $(this).html(), description: dds.html(), class: i%2 ? 'odd' : 'even' })
+						})
+					html = CmdUtils.renderTemplate(
+						feed.dom.getElementById("dict").innerHTML,
+						{ items: items }
+					)
+					pblock.innerHTML = CmdUtils.absUrl(html,"http://dees.dict.cc/")
+				}
+			)
+		}
+	},
+	execute: function(args) {
+		var input = args.object;
+		var url = "http://dees.dict.cc/?s={QUERY}"
+		var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
+		Utils.openUrlInBrowser(urlString);
+	}
 })
 
 /** ************************************************************************************************
