@@ -13,28 +13,31 @@
 <p>This XHTML feed contains extended commands for Mozilla's Ubiquity.</p>
 <p>Get Ubiquity here: <a href="https://bitbucket.org/satyr/ubiquity/downloads/tip.xpi">https://bitbucket.org/satyr/ubiquity/downloads/tip.xpi</a></p>
 <ol>
+    <item>BOOKMARKLETS </item>
     <item>diaspora: Share the current page on Diaspora</item>
     <item>paste_passwords: Attempt to allow pasting into password fields in pages that have programmatically disallowed it</item>
     <item>plus: Share the current page on Google Plus</item>
     <item>textarea2editor: Triple-click a plain textarea to turn it into a Code Editor using the ACE Bookmarklet</item>
     <item>wishlist: Execute the Amazon Universal Wishlist bookmarklet</item>
+    <item>COMMANDS </item>
 	<item>aarne-thompson: Returns the type of an aarne-thompson number</item>
-    <item>Amazon.de: Searches Amazon.de for items matching your words.</item>
-    <item>beautify_js: Beautifies JavaScript code using the engine behind jsbeautifier.org"</item>
+    <item>Amazon.de: Searches Amazon.de for items matching your words</item>
+    <item>beautify_js: Beautifies JavaScript code using the engine behind jsbeautifier.org</item>
     <item>bigpicture: Previews Boston.com's The Big Picture (from RSS Feed)</item>
+    <item>calcg: Calculates using Google Calculator</item>
     <item>chart: Turn numeric data into charts using the Google Charts API</item>
-    <item>color: Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.</item>
+    <item>color: Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor</item>
     <item>decode: Decodes URL-encoded text</item>
-    <item>dict: Searches Dict.cc for a German/English term and loads results in the preview pane.</item>
-    <item>dictes: Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.</item>
+    <item>dict: Searches Dict.cc for a German/English term and loads results in the preview pane</item>
+    <item>dictes: Searches Dict.cc for a German/Spanish term and loads the results in the preview pane</item>
     <item>encode: URL-encodes text</item>
     <item>fortune: Retrieves a Unix Fortune from the online service ihearquotes.com</item>
     <item>get-color: Grab colors from web pages</item>
-    <item>lds: Searches LDS.org and loads results into the Preview pane.</item>
-    <item>qrcode: Generates a QR Code with the specified text encoded.</item>
-    <item>stock-chart: Displays a stock chart for the given ticker (from Yahoo! finance).</item>
-    <item>text2html: Renders plain text as HTML.</item>
-    <item>wolf: Searches WolframAlpha and loads results in to Preview pane.</item>    
+    <item>lds: Searches LDS.org and loads results into the Preview pane</item>
+    <item>qrcode: Generates a QR Code with the specified text encoded</item>
+    <item>stock-chart: Displays a stock chart for the given ticker (from Yahoo! finance)</item>
+    <item>text2html: Renders plain text as HTML</item>
+    <item>wolf: Searches WolframAlpha and loads results in to Preview pane</item>    
 </ol>
 <!-- ============================================ -->
 <!--	Template for Amazon Search                -->
@@ -441,6 +444,63 @@ CmdUtils.CreateCommand({
                 )
             }
         )
+    }
+})
+
+/** ************************************************************************************************
+ * calcg
+ * Interface to the google calculator
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+    names: ["calcg", "gcalculate_fixed"],
+    arguments: [{role:"object", label:"expression", nountype: noun_arb_text}],
+    description: '\
+        Calculates using <a href="http://www.googleguide.com/help/calculator.html">Google Calculator</a>\
+        which has all the features of a scientific calculator,\
+        knows constants such as the speed of light,\
+        and can convert between units and currencies.',
+    help: ("Try <code>22/7, 25% of 700, sin(sqrt(ln(pi))), (1+i)^3, " +
+        "15 mod 9, (5 choose 2) / 3!, speed of light in miles per hour, " +
+        "3 dollars in euros, 242 in hex, MCMXVI in decimal</code>."),
+    icon: "chrome://ubiquity/skin/icons/calculator.png",
+    author: {name: "g2010a", email: "ubiquity@the.oib.com"},
+    license: "Public domain",
+    _google_url: function (q) ("http://www.google.com/ig/calculator?hl=en&num=1&q=" + encodeURIComponent(q)),
+    _calc: function(object, callback, pb){
+        var url = this._google_url(jQuery.trim(object.text))
+            fn = function(json) {
+                    // turn string into valid json so it can be parsed
+                    json = json.replace('lhs','"lhs"')
+                                .replace('rhs','"rhs"')
+                                .replace('error','"error"')
+                                .replace('icc','"icc"')
+                                .replace('true','"true"')
+                                .replace('false','"false"')
+                    var data = JSON.parse(json)
+                    callback(data)
+                }			
+        pb ? CmdUtils.previewGet(pb, url, null, fn) : $.get(url, fn)
+    },
+    preview: function (pb, {object}) {
+        if (!object.text) {
+          this.previewDefault(pb)
+          return
+        }
+        this._calc(object, function(data) {
+            pb.innerHTML = (
+                    '<div class="calculate">' +
+                        '<b style="font-size:larger">' + data.rhs + '</b>' +
+                        (typeof data.rhs === "string"
+                         ? '<p><a href="http://www.googleguide.com/help/calculator.html">Quick Reference</a></p>'
+                         : "") +
+                    '</div>'
+                )
+        }, pb)
+    },
+    execute: function ({object}) {
+        this._calc(object, function (data) {
+            CmdUtils.setSelection(data.rhs)
+        })
     }
 })
 

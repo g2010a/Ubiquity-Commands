@@ -24,8 +24,10 @@ Bookmarklet commands
 Commands
   * wishlist: Execute the Amazon Universal Wishlist bookmarklet
   * aarne-thompson: Returns the type of an aarne-thompson number
-  * Amazon.de: Searches Amazon.de for items matching your words.
+  * Amazon.de: Searches Amazon.de for items matching your words
+  * beautify_js: Beautifies JavaScript code using the engine behind jsbeautifier.org
   * bigpicture: Previews Boston.com's The Big Picture (from RSS Feed)
+  * calcg: Calculates using Google Calculator
   * chart: Turn numeric data into charts using the Google Charts API
   * color: Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.
   * decode: Decodes URL-encoded text
