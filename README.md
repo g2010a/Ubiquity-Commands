@@ -41,3 +41,4 @@ Commands
   * stock-chart: Displays a stock chart for the given ticker (from Yahoo! finance).
   * text2html: Renders plain text as HTML.
   * wolf: Searches WolframAlpha and loads results in to Preview pane.    
+  * yubnub: Executes YubNub commands and loads results in to Preview pane where possible.
