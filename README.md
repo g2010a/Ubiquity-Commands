@@ -30,6 +30,7 @@ Commands
   * calcg: Calculates using Google Calculator
   * chart: Turn numeric data into charts using the Google Charts API
   * color: Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.
+  * datatable: Enhances tables in the page to make them sortable, filterable, etc. using jQuery and the datatables plugin from http://datatables.net. Takes a tableid as argument or applies to all tables if nothing is passed.
   * decode: Decodes URL-encoded text
   * dict: Searches Dict.cc for a German/English term and loads results in the preview pane.
   * dictes: Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.
