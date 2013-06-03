@@ -38,6 +38,7 @@
     <item>stock-chart: Displays a stock chart for the given ticker (from Yahoo! finance)</item>
     <item>text2html: Renders plain text as HTML</item>
     <item>wolf: Searches WolframAlpha and loads results in to Preview pane</item>    
+    <item>yubnub: Executes YubNub commands and loads results in to Preview pane where possible.</item>    
 </ol>
 <!-- ============================================ -->
 <!--	Template for Amazon Search                -->
@@ -1197,6 +1198,38 @@ CmdUtils.CreateCommand({
     var url = "http://www.wolframalpha.com/input/?i={QUERY}"
     var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
     Utils.openUrlInBrowser(urlString);
+  }
+})
+
+
+/** ************************************************************************************************
+ * yubnub
+ * Yubnub with dynamic preview
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["yubnub"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://www.yubnub.org/favicon.ico",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
+  author: {name:"g2010a"},
+  description: "Executes <a href='http://yubnub.org/kernel/ls?args='>YubNub commands</a> and loads results in to Preview pane where possible.",
+
+  preview: function(pblock, args) {
+    var input = $.trim(args.object.text)
+    CmdUtils.previewGet(pblock,
+      'http://yubnub.org/parser/parse?command=' + input,
+      null,
+      function(data){
+        var html = data//.match(/<body\s*[^>]*>([\S\s]*?)<\/body>/i)[0]
+        html = CmdUtils.absUrl(html, 'http://yubnub.org')
+        html = "<style>body{font-size: 0.9rem; text-shadow: none}</style>" + html
+        pblock.innerHTML = html;
+      }
+    );
+  },
+  execute: function(args) {
+    var input = $.trim(args.object.text)
+    Utils.openUrlInBrowser("http://yubnub.org/parser/parse?command="+input);
   }
 })
 
