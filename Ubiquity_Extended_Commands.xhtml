@@ -144,6 +144,58 @@ img { border-radius: 10px; }
 {/for}
 </div>
 
+<!-- ============================================ -->
+<!--	Template for DuckDuckGo 				  -->
+<!-- ============================================ -->
+<div id="duckduckgo">
+<style>
+.header:not(:empty) {
+    font-weight:800;
+    text-transform: uppercase;
+}
+div.container { 
+	max-width: 470px;
+}
+div {
+	display:block;
+    padding: 10px 5px 5px 5px; 
+    border: 1px solid #666666;
+    margin: 10px 0;
+    border-radius: 15px;
+}
+div:empty {
+    display: none;
+}
+a {
+    color: #DDEEFF
+}
+img { border-radius: 10px; }
+li {
+    list-style: none;
+    margin: 3px 0px;
+}
+</style>
+<div>${Image}</div>
+<div>${Abstract}</div>
+<div>${Answer}</div>
+<div>${Definition}</div>
+{for item in RelatedTopics}
+    <div class='container'>
+		${item.Result}<span class='header'>${item.Name}</span>
+        <ul>
+            {for topic in item.Topics}
+                <li>
+                    <img src='${topic.Icon.URL}'/>
+                    ${topic.Result}
+                </li>
+            {/for}
+        </ul>
+    </div>
+{/for}
+</div>
+
+
+
 <script type="?" class="commands">
 <![CDATA[
 /**
@@ -174,7 +226,7 @@ CmdUtils.makeBookmarkletCommand({
 	names: ["textarea2editor"],
     icon: "http://ajaxorg.github.com/ace/doc/site/images/ace-tab.png",
 	description: "Triple-click a plain textarea to turn it into a Code Editor using the ACE Bookmarklet",
-    url: 'javascript:(function%20inject(callback)%20{%20var%20baseUrl="http://ajaxorg.github.com/ace-builds/textarea/src/";%20var%20load%20=%20window.__ace_loader__%20=%20function(path,%20module,%20callback)%20{%20var%20head%20=%20document.getElementsByTagName("head")[0];%20var%20s%20=%20document.createElement("script");%20s.src%20=%20baseUrl%20+%20path;%20head.appendChild(s);%20s.onload%20=%20function%20()%20{%20window.__ace_shadowed__.require([module],%20callback);%20};%20};%20load("ace-bookmarklet.js",%20"ace/ext/textarea",%20function%20()%20{%20var%20ace%20=%20window.__ace_shadowed__;%20ace.options%20=%20{%20mode:"javascript",theme:"merbivore",gutter:"true",fontSize:"12px",softWrap:"off",keybindings:"ace",showPrintMargin:"false",useSoftTabs:"true",showInvisibles:"false"%20};%20var%20Event%20=%20ace.require("ace/lib/event");%20var%20areas%20=%20document.getElementsByTagName("textarea");%20for%20(var%20i%20=%200;%20i%20<%20areas.length;%20i++)%20{%20Event.addListener(areas[i],%20"click",%20function%20(e)%20{%20if%20(e.detail%20==%203)%20{%20ace.transformTextarea(e.target,%20load);%20}%20});%20}%20callback%20&&%20callback();%20});})()'
+    url: "javascript:(function%20inject(callback)%20{%20var%20baseUrl='https://ajaxorg.github.com/ace-builds/textarea/src/';%20var%20load%20=%20window.__ace_loader__%20=%20function(path,%20module,%20callback)%20{%20var%20head%20=%20document.getElementsByTagName('head')[0];%20var%20s%20=%20document.createElement('script');%20s.src%20=%20baseUrl%20+%20path;%20head.appendChild(s);%20s.onload%20=%20function()%20{%20window.__ace_shadowed__.require([module],%20callback);%20};%20};%20load('ace-bookmarklet.js',%20'ace/ext/textarea',%20function()%20{%20var%20ace%20=%20window.__ace_shadowed__;%20ace.options%20=%20{mode:'javascript',theme:'twilight',gutter:'false',fontSize:'12px',softWrap:'off',keybindings:'ace',showPrintMargin:'false',useSoftTabs:'true',showInvisibles:'false'%20};%20var%20Event%20=%20ace.require('ace/lib/event');%20var%20areas%20=%20document.getElementsByTagName('textarea');%20for%20(var%20i%20=%200;%20i%20<%20areas.length;%20i++)%20{%20Event.addListener(areas[i],%20'click',%20function(e)%20{%20if%20(e.detail%20==%203)%20{%20ace.transformTextarea(e.target,%20load);%20}%20});%20}%20callback%20&&%20callback();%20});%20})()"
 })
 
 CmdUtils.makeBookmarkletCommand({
@@ -183,6 +235,16 @@ CmdUtils.makeBookmarkletCommand({
 	url: "javascript:(function(){var%20w=window,l=w.location,d=w.document,s=d.createElement('script'),e=encodeURIComponent,x='undefined',u='http://www.amazon.com/wishlist/add';if(typeof%20s!='object')l.href=u+'?u='+e(l)+'&t='+e(d.title);function%20g(){if(d.readyState&&d.readyState!='complete'){setTimeout(g,200);}else{if(typeof%20AUWLBook==x)s.setAttribute('src',u+'.js?loc='+e(l)),d.body.appendChild(s);function%20f(){(typeof%20AUWLBook==x)?setTimeout(f,200):AUWLBook.showPopover();}f();}}g();}())"
 })
 
+/**
+ * Search commands
+ */
+CmdUtils.makeSearchCommand({
+    name: "dhl",
+    icon: "http://www.dhl.de/favicon.ico",
+    description: "Search dhl.de for a package number",
+    url: "http://nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=en&idc={QUERY}&rfn=&extendedSearch=true",
+});
+ 
 /** ************************************************************************************************
  * aarne-thompson
  * Returns the type of an aarne-thompson number
@@ -505,6 +567,40 @@ CmdUtils.CreateCommand({
         })
     }
 })
+
+/** ************************************************************************************************
+ * duckduckgo
+ * DuckDuckGo with dynamic preview
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+  names: ["duckduckgo", "duck"],
+  arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+  icon: "http://www.duckduckgo.com/favicon.ico",
+  homepage: 'https://github.com/g2010a/Ubiquity-Commands',
+  author: {name:"g2010a"},
+  description: "Searches with <a href='https://duckduckgo.com/'>DuckDuckGo</a> and loads results into the preview pane",
+
+  preview: function(pblock, args) {
+    var input = $.trim(args.object.text)
+    $.getJSON(
+      'http://api.duckduckgo.com/?format=json&t=firefox_ubiquity_extensions&q=' + input,
+      function(data){
+        if (data.Image) data.Image = "<img src='"+data.Image+"'/>"
+        if (data.AbstractURL) data.Abstract = data.Abstract + "<br/><a href='"+data.AbstractURL+"'>"+data.AbstractSource+"</a>"
+        if (data.DefinitionURL) data.Definition = data.Definition + "<br/><a href='"+data.DefinitionURL+"'>"+data.DefinitionSource+"</a>"
+        pblock.innerHTML = CmdUtils.renderTemplate(
+            feed.dom.getElementById("duckduckgo").innerHTML,
+            data
+        )
+      }
+    )
+  },
+  execute: function(args) {
+    var input = $.trim(args.object.text)
+    Utils.openUrlInBrowser("https://duckduckgo.com/?q="+input);
+  }
+})
+
 
 /** ************************************************************************************************
  * Graphs pie, bar, and line charts.
