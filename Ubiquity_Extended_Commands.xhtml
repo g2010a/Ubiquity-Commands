@@ -35,6 +35,7 @@
     <item>fortune: Retrieves a Unix Fortune from the online service ihearquotes.com</item>
     <item>get-color: Grab colors from web pages</item>
     <item>lds: Searches LDS.org and loads results into the Preview pane</item>
+    <item>url parser: Breaks URLS into their components</item>
     <item>qrcode: Generates a QR Code with the specified text encoded</item>
     <item>stock-chart: Displays a stock chart for the given ticker (from Yahoo! finance)</item>
     <item>text2html: Renders plain text as HTML</item>
@@ -981,11 +982,11 @@ CmdUtils.CreateCommand({
         var tableid = jQuery.trim(input.object.text)
         if (tableid[0] !== "#") tableid = "#" + tableid
         
-        CmdUtils.injectCss("http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css")
-        CmdUtils.injectCss("http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables_themeroller.css")
+        CmdUtils.injectCss("https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css")
+        CmdUtils.injectCss("https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables_themeroller.css")
 		CmdUtils.loadJQuery(function(jqobj){
             CmdUtils.log("Injected jQuery")
-            CmdUtils.injectJs("http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.js", function(){
+            CmdUtils.injectJs("https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.js", function(){
                 CmdUtils.log("Injected jquery.dataTables.js")
                 
                 CmdUtils.injectJs(that.__colvis_plugin, function() {
@@ -1290,6 +1291,31 @@ CmdUtils.CreateCommand({
     var urlString = url.replace("{QUERY}", encodeURIComponent(input.text));
     Utils.openUrlInBrowser(urlString);
   }
+})
+
+/** ************************************************************************************************
+ * Parse URL
+ * Parses a URL
+ * *********************************************************************************************** */
+CmdUtils.CreateCommand({
+    names: ["parse url", "url parser", "prettify url", "url prettifier"],
+    arguments: [{role:"object", label:"input",nountype: noun_arb_text}],
+    homepage: 'https://github.com/g2010a/Ubiquity-Commands',
+    author: {name:"g2010a"},
+    description: "Parses and prettifies URLs",
+    
+    preview: function(pblock, args) {
+        var input = args.object.text,
+            parser = $("<a/>").attr('href',input)[0]
+        
+        pblock.innerHTML = parser.protocol 
+            + "<br/>+- " + parser.host
+            + "<br/>+-- " + parser.pathname
+        parser.search.slice(1).split("&").forEach(function(param){
+                pblock.innerHTML += ( "<br/>+--- " + param )
+            })
+        pblock.innerHTML += "<br/>+- " + parser.hash
+    },
 })
 
 
