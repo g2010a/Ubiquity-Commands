@@ -227,7 +227,7 @@ CmdUtils.makeBookmarkletCommand({
 	names: ["textarea2editor"],
     icon: "http://ajaxorg.github.com/ace/doc/site/images/ace-tab.png",
 	description: "Triple-click a plain textarea to turn it into a Code Editor using the ACE Bookmarklet",
-    url: "javascript:(function%20inject(callback)%20{%20var%20baseUrl='https://ajaxorg.github.com/ace-builds/textarea/src/';%20var%20load%20=%20window.__ace_loader__%20=%20function(path,%20module,%20callback)%20{%20var%20head%20=%20document.getElementsByTagName('head')[0];%20var%20s%20=%20document.createElement('script');%20s.src%20=%20baseUrl%20+%20path;%20head.appendChild(s);%20s.onload%20=%20function()%20{%20window.__ace_shadowed__.require([module],%20callback);%20};%20};%20load('ace-bookmarklet.js',%20'ace/ext/textarea',%20function()%20{%20var%20ace%20=%20window.__ace_shadowed__;%20ace.options%20=%20{mode:'javascript',theme:'twilight',gutter:'false',fontSize:'12px',softWrap:'off',keybindings:'ace',showPrintMargin:'false',useSoftTabs:'true',showInvisibles:'false'%20};%20var%20Event%20=%20ace.require('ace/lib/event');%20var%20areas%20=%20document.getElementsByTagName('textarea');%20for%20(var%20i%20=%200;%20i%20<%20areas.length;%20i++)%20{%20Event.addListener(areas[i],%20'click',%20function(e)%20{%20if%20(e.detail%20==%203)%20{%20ace.transformTextarea(e.target,%20load);%20}%20});%20}%20callback%20&&%20callback();%20});%20})()"
+    url: "javascript:(function%20inject(callback)%20{%20var%20baseUrl='https://ajaxorg.github.com/ace-builds/src-noconflict/';%20var%20load%20=%20window.__ace_loader__%20=%20function(path,%20module,%20callback)%20{%20var%20head%20=%20document.getElementsByTagName('head')[0];%20var%20s%20=%20document.createElement('script');%20s.src%20=%20baseUrl%20+%20path;%20head.appendChild(s);%20s.onload%20=%20function()%20{%20window.__ace_shadowed__.require([module],%20callback);%20};%20};%20load('ace-bookmarklet.js',%20'ace/ext/textarea',%20function()%20{%20var%20ace%20=%20window.__ace_shadowed__;%20ace.options%20=%20{mode:'javascript',theme:'twilight',gutter:'false',fontSize:'12px',softWrap:'off',keybindings:'ace',showPrintMargin:'false',useSoftTabs:'true',showInvisibles:'false'%20};%20var%20Event%20=%20ace.require('ace/lib/event');%20var%20areas%20=%20document.getElementsByTagName('textarea');%20for%20(var%20i%20=%200;%20i%20<%20areas.length;%20i++)%20{%20Event.addListener(areas[i],%20'click',%20function(e)%20{%20if%20(e.detail%20==%203)%20{%20ace.transformTextarea(e.target,%20load);%20}%20});%20}%20callback%20&&%20callback();%20});%20})()"
 })
 
 CmdUtils.makeBookmarkletCommand({
@@ -513,59 +513,46 @@ CmdUtils.CreateCommand({
 })
 
 /** ************************************************************************************************
- * calcg
- * Interface to the google calculator
+ * calcjs
+ * Interface to Math.js
  * *********************************************************************************************** */
 CmdUtils.CreateCommand({
-    names: ["calcg", "gcalculate_fixed"],
+    names: ["calcjs", "calculate using math.js"],
     arguments: [{role:"object", label:"expression", nountype: noun_arb_text}],
     description: '\
-        Calculates using <a href="http://www.googleguide.com/help/calculator.html">Google Calculator</a>\
+        Calculates using <a href="http://mathjs.org">Math.js</a>\
         which has all the features of a scientific calculator,\
-        knows constants such as the speed of light,\
-        and can convert between units and currencies.',
+        and can convert between units.',
     help: ("Try <code>22/7, 25% of 700, sin(sqrt(ln(pi))), (1+i)^3, " +
-        "15 mod 9, (5 choose 2) / 3!, speed of light in miles per hour, " +
-        "3 dollars in euros, 242 in hex, MCMXVI in decimal</code>."),
+        "15 mod 9, 3!</code>. Redirects to Google on hitting 'enter', in case more complex operations are executed (e.g. currency conversion)"),
     icon: "chrome://ubiquity/skin/icons/calculator.png",
     author: {name: "g2010a", email: "ubiquity@the.oib.com"},
     license: "Public domain",
-    _google_url: function (q) ("http://www.google.com/ig/calculator?hl=en&num=1&q=" + encodeURIComponent(q)),
-    _calc: function(object, callback, pb){
-        var url = this._google_url(jQuery.trim(object.text))
-            fn = function(json) {
-                    // turn string into valid json so it can be parsed
-                    json = json.replace('lhs','"lhs"')
-                                .replace('rhs','"rhs"')
-                                .replace('error','"error"')
-                                .replace('icc','"icc"')
-                                .replace('true','"true"')
-                                .replace('false','"false"')
-                    var data = JSON.parse(json)
-                    callback(data)
-                }			
-        pb ? CmdUtils.previewGet(pb, url, null, fn) : $.get(url, fn)
-    },
-    preview: function (pb, {object}) {
-        if (!object.text) {
-          this.previewDefault(pb)
+    _url: function (q) { return "http://api.mathjs.org/v1/?expr=" + encodeURIComponent(q) },
+    preview: function (pblock, args) {
+        if (!args.object.text) {
+          this.previewDefault(pblock)
           return
         }
-        this._calc(object, function(data) {
-            pb.innerHTML = (
+        var self = this;
+        CmdUtils.previewGet(pblock,
+            self._url(args.object.text),
+            null,
+            function(data){
+                pblock.innerHTML = (
                     '<div class="calculate">' +
-                        '<b style="font-size:larger">' + data.rhs + '</b>' +
-                        (typeof data.rhs === "string"
+                        '<b style="font-size:larger">' + data + '</b>' +
+                        (typeof data === "string"
                          ? '<p><a href="http://www.googleguide.com/help/calculator.html">Quick Reference</a></p>'
                          : "") +
                     '</div>'
                 )
-        }, pb)
+            }
+        )
     },
-    execute: function ({object}) {
-        this._calc(object, function (data) {
-            CmdUtils.setSelection(data.rhs)
-        })
+    execute: function (args) {
+        var input = $.trim(args.object.text)
+        Utils.openUrlInBrowser("https://www.google.de/search?q="+input);
     }
 })
 
