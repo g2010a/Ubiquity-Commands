@@ -34,6 +34,7 @@ Commands
   * decode: Decodes URL-encoded text
   * dict: Searches Dict.cc for a German/English term and loads results in the preview pane.
   * dictes: Searches Dict.cc for a German/Spanish term and loads the results in the preview pane.
+  * emoji: returns a text emoji (unicode)
   * encode: URL-encodes text
   * fortune: Retrieves a Unix Fortune from the online service ihearquotes.com
   * get-color: Grab colors from web pages
