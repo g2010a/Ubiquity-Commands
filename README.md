@@ -27,6 +27,7 @@ Commands
   * Amazon.de: Searches Amazon.de for items matching your words
   * beautify_js: Beautifies JavaScript code using the engine behind jsbeautifier.org
   * bigpicture: Previews Boston.com's The Big Picture (from RSS Feed)
+  * bitly: Shortens URLs using Bitly (requires a Bitly generic API token)
   * calcg: Calculates using Google Calculator
   * chart: Turn numeric data into charts using the Google Charts API
   * color: Accepts a textual color code and previews it. Pressing enter inserts a small block of that color at the cursor.
